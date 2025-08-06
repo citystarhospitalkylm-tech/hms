@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Pharmacy Bill {{ sale.id }}</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+    th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+    .right { text-align: right; }
+  </style>
+</head>
+<body>
+  <h1>Pharmacy Bill</h1>
+  <p>Sale ID: {{ sale.id }}</p>
+  <p>Patient: {{ sale.patient.first_name }} {{ sale.patient.last_name }} ({{ sale.patient.patient_id }})</p>
+  <p>Date: {{ sale.sale_date }}</p>
+  <p>Sold by: {{ sale.sold_by.email }}</p>
+
+  <table>
+    <thead>
+      <tr><th>Medicine</th><th>Batch</th><th class="right">Qty</th><th class="right">Unit Price</th><th class="right">Total</th></tr>
+    </thead>
+    <tbody>
+      {% for item in sale.items.all %}
+      <tr>
+        <td>{{ item.medicine.name }}</td>
+        <td>{{ item.batch.batch_number }}</td>
+        <td class="right">{{ item.quantity }}</td>
+        <td class="right">{{ item.unit_price }}</td>
+        <td class="right">{{ item.total_price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><th colspan="4">Total Amount</th><th class="right">{{ sale.total_amount }}</th></tr>
+    </tfoot>
+  </table>
+</body>
+</html>

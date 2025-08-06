@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Invoice {{ invoice.invoice_number }}</title>
+  <style>
+    /* Minimal print styling */
+    body { font-family: Arial, sans-serif; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+    th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+    .right { text-align: right; }
+  </style>
+</head>
+<body>
+  <h1>Invoice {{ invoice.invoice_number }}</h1>
+  <p>Patient: {{ invoice.patient.first_name }} {{ invoice.patient.last_name }} ({{ invoice.patient.patient_id }})</p>
+  <p>Issued: {{ invoice.created_at.date }} | Due: {{ invoice.due_date }}</p>
+
+  <table>
+    <thead>
+      <tr><th>Description</th><th class="right">Amount</th></tr>
+    </thead>
+    <tbody>
+      {% for item in invoice.items.all %}
+      <tr>
+        <td>{{ item.description }}</td>
+        <td class="right">{{ item.amount }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><th>Total</th><th class="right">{{ invoice.total_amount }}</th></tr>
+      <tr><th>Paid</th><th class="right">{{ invoice.paid_amount }}</th></tr>
+      <tr><th>Due</th><th class="right">{{ invoice.outstanding_amount }}</th></tr>
+    </tfoot>
+  </table>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Lab Tests{% endblock %}
+{% block content %}
+  <h2>Lab Test Catalog</h2>
+  <a href="{% url 'labtest-list' %}/create/">Add Test</a>
+  <table>
+    <thead>
+      <tr><th>Code</th><th>Name</th><th>Price</th><th>Active</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for test in lab_tests %}
+      <tr>
+        <td>{{ test.code }}</td>
+        <td>{{ test.name }}</td>
+        <td>{{ test.price }}</td>
+        <td>{{ test.is_active }}</td>
+        <td>
+          <a href="{% url 'labtest-update' test.id %}">Edit</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

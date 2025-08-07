@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Doctor Detail{% endblock %}
+{% block content %}
+  <h2>Dr. {{ doctor.user.get_full_name }}</h2>
+  <p><strong>Specialty:</strong> {{ doctor.specialty }}</p>
+  <p><strong>Qualifications:</strong> {{ doctor.qualifications }}</p>
+  <p><strong>Department:</strong> {{ doctor.department }}</p>
+  <p><strong>Phone:</strong> {{ doctor.phone }}</p>
+  <p><strong>Status:</strong> {{ doctor.get_status_display }}</p>
+  <a href="{% url 'doctor-update' doctor.id %}">Edit Profile</a>
+{% endblock %}

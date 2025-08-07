@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Drugs Inventory</h2>
+<table class="table">
+  <thead>
+    <tr><th>Name</th><th>Category</th><th>Unit Price</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+  {% for drug in drugs %}
+    <tr>
+      <td>{{ drug.name }}</td>
+      <td>{{ drug.category.name }}</td>
+      <td>{{ drug.unit_price }}</td>
+      <td><a href="{% url 'pharmacy:drug-detail' drug.id %}">View</a></td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

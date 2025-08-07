@@ -1,32 +1,34 @@
 from django.db import models
-from django.utils import timezone
-from apps.pharmacy.models import Medicine, Batch, SaleItem
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
 
 
-class StockChange(models.Model):
+class InventoryRecord(models.Model):
     """
-    Records every decrement or increment to batch stock.
-    Negative `delta` means stock went down.
+    Tracks current stock position per drug batch,
+    without importing pharmacy models directly.
     """
-    timestamp   = models.DateTimeField(default=timezone.now)
-    user        = models.ForeignKey(User, on_delete=models.PROTECT)
-    medicine    = models.ForeignKey(Medicine, on_delete=models.PROTECT)
-    batch       = models.ForeignKey(Batch, on_delete=models.PROTECT)
-    delta       = models.IntegerField()  # +ve for receipts, -ve for issues
-    sale_item   = models.ForeignKey(
-        SaleItem,
-        null=True, blank=True,
-        on_delete=models.SET_NULL,
-        help_text="If change caused by a SaleItem"
+
+    batch = models.ForeignKey(
+        "pharmacy.Batch",
+        on_delete=models.PROTECT,
+        related_name="inventory_records"
     )
-    note        = models.CharField(max_length=255, blank=True)
+    # Optionally link to the last sale item
+    last_sale = models.ForeignKey(
+        "pharmacy.SaleItem",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+"
+    )
+    current_quantity = models.PositiveIntegerField(default=0)
+    updated_at       = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-timestamp']
+        unique_together = [["batch"]]
+        ordering = ["batch__drug__name"]
+        verbose_name = "Inventory Record"
+        verbose_name_plural = "Inventory Records"
 
     def __str__(self):
-        direction = "↓" if self.delta < 0 else "↑"
-        return f"{direction} {self.medicine.name} ({self.batch.batch_number}): {self.delta}"
+        drug = self.batch.drug
+        return f"{drug.name} — Batch {self.batch.batch_no}: {self.current_quantity} units"

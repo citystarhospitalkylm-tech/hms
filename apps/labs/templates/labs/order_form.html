@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ object|default_if_none:"New" }} Lab Order{% endblock %}
+{% block content %}
+  <h2>{{ object|default_if_none:"New" }} Lab Order</h2>
+  <form method="post">{% csrf_token %}
+    <label>Patient:<br>
+      <select name="patient">
+        {% for p in patients %}
+          <option value="{{ p.id }}" {% if p.id|stringformat:"s" == form.patient.value|stringformat:"s" %}selected{% endif %}>
+            {{ p.full_name }}
+          </option>
+        {% endfor %}
+      </select>
+    </label><br>
+    <label>Doctor:<br>
+      <select name="doctor">
+        {% for d in doctors %}
+          <option value="{{ d.id }}" {% if d.id|stringformat:"s" == form.doctor.value|stringformat:"s" %}selected{% endif %}>
+            {{ d.get_full_name }}
+          </option>
+        {% endfor %}
+      </select>
+    </label><br>
+    <label>Test:<br>
+      <select name="test">
+        {% for t in lab_tests %}
+          <option value="{{ t.id }}" {% if t.id|stringformat:"s" == form.test.value|stringformat:"s" %}selected{% endif %}>
+            {{ t.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </label><br>
+    <button type="submit">Save</button>
+  </form>
+{% endblock %}

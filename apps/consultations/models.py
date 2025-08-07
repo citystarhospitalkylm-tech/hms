@@ -3,6 +3,31 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 from apps.patients.models import Patient
+from django.conf import settings
+
+class Consultation(models.Model):
+    doctor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        limit_choices_to={"role": "DOCTOR"},
+        related_name="consultations",
+    )
+    patient = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        limit_choices_to={"role": "PATIENT"},
+        related_name="patient_consultations",
+    )
+notes      = models.TextField(blank=True)
+created_at = models.DateTimeField(auto_now_add=True)
+
+class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Consultation"
+
+def __str__(self):
+        return f"{self.doctor.username} → {self.patient.username} @ {self.created_at.date()}"
+
 
 User = get_user_model()
 

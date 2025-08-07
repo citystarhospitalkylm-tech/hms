@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Dispensation Confirmation</h2>
+<p>Dispensed {{ dispense.prescription_item.drug.name }} x{{ dispense.prescription_item.quantity }} to {{ dispense.prescription_item.prescription.patient.full_name }} on {{ dispense.dispensed_at }}</p>
+<a href="{% url 'pharmacy:dispensations-list' %}" class="btn btn-secondary">Back to list</a>
+{% endblock %}

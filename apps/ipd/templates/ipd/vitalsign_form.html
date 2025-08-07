@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Record Vital Sign{% endblock %}
+{% block content %}
+  <h2>Record Vital Sign{% if admission %} for Admission #{{ admission.id }}{% endif %}</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    {% if not admission %}
+      <label>Admission ID:<br>
+        <input type="number" name="admission" value="{{ form.admission.value }}">
+      </label><br>
+    {% else %}
+      <input type="hidden" name="admission" value="{{ admission.id }}">
+    {% endif %}
+
+    <label>Temperature (°C):<br>
+      <input type="number" step="0.1" name="temperature" value="{{ form.temperature.value }}">
+    </label><br>
+
+    <label>Blood Pressure - Systolic:<br>
+      <input type="number" name="bp_systolic" value="{{ form.bp_systolic.value }}">
+    </label><br>
+
+    <label>Blood Pressure - Diastolic:<br>
+      <input type="number" name="bp_diastolic" value="{{ form.bp_diastolic.value }}">
+    </label><br>
+
+    <label>Heart Rate:<br>
+      <input type="number" name="heart_rate" value="{{ form.heart_rate.value }}">
+    </label><br>
+
+    <label>Respiratory Rate:<br>
+      <input type="number" name="respiratory_rate" value="{{ form.respiratory_rate.value }}">
+    </label><br>
+
+    <button type="submit">Save Vital Sign</button>
+  </form>
+{% endblock %}

@@ -1,30 +1,29 @@
 from django.contrib import admin
-from .models import Medicine, Batch, PharmacySale, SaleItem
+from .models import Supplier, DrugCategory, Drug, Batch, SaleItem
 
+@admin.register(Supplier)
+class SupplierAdmin(admin.ModelAdmin):
+    list_display  = ('name', 'contact_email', 'created_at')
+    search_fields = ('name',)
 
-@admin.register(Medicine)
-class MedicineAdmin(admin.ModelAdmin):
-    list_display    = ('name', 'unit_price', 'total_stock', 'low_stock_threshold')
-    search_fields   = ('name',)
-    readonly_fields = ('total_stock',)
+@admin.register(DrugCategory)
+class DrugCategoryAdmin(admin.ModelAdmin):
+    list_display  = ('name',)
+    search_fields = ('name',)
 
+@admin.register(Drug)
+class DrugAdmin(admin.ModelAdmin):
+    list_display  = ('name', 'category', 'unit_price', 'created_at')
+    list_filter   = ('category',)
+    search_fields = ('name',)
 
 @admin.register(Batch)
 class BatchAdmin(admin.ModelAdmin):
-    list_display  = ('medicine', 'batch_number', 'expiry_date', 'quantity')
-    list_filter   = ('medicine', 'expiry_date')
-    search_fields = ('batch_number',)
+    list_display  = ('batch_no', 'drug', 'quantity', 'expiry_date')
+    list_filter   = ('expiry_date',)
+    search_fields = ('batch_no',)
 
-
-class SaleItemInline(admin.TabularInline):
-    model = SaleItem
-    extra = 0
-    readonly_fields = ('unit_price', 'total_price')
-
-
-@admin.register(PharmacySale)
-class PharmacySaleAdmin(admin.ModelAdmin):
-    list_display    = ('id', 'patient', 'sale_date', 'sold_by', 'total_amount')
-    inlines         = [SaleItemInline]
-    readonly_fields = ('sale_date', 'total_amount')
-    search_fields   = ('patient__patient_id',)
+@admin.register(SaleItem)
+class SaleItemAdmin(admin.ModelAdmin):
+    list_display  = ('batch', 'quantity_sold', 'sold_at', 'unit_price')
+    list_filter   = ('sold_at',)

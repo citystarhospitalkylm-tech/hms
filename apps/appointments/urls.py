@@ -1,10 +1,9 @@
-from django.urls import path
-from .views import (
-    AppointmentListCreateView,
-    AppointmentRetrieveUpdateDestroyView
-)
+# apps/appointments/urls.py
 
-urlpatterns = [
-    path('appointments/',           AppointmentListCreateView.as_view(),           name='appointment-list-create'),
-    path('appointments/<uuid:id>/', AppointmentRetrieveUpdateDestroyView.as_view(), name='appointment-detail'),
-]
+from rest_framework.routers import DefaultRouter
+from .views import AppointmentViewSet
+
+router = DefaultRouter()
+router.register(r"appointments", AppointmentViewSet, basename="appointment")
+
+urlpatterns = router.urls

@@ -1,27 +1,23 @@
-# Python bytecode
+# Python artifacts
 __pycache__/
 *.py[cod]
+*$py.class
 
-# Virtual environment
+# Environments
 venv/
-env/
-.venv/
-
-# Environment variables
 .env
 
-# Django database
-db.sqlite3
+# Django
+staticfiles/
+media/
 
-# Django static and media
-/static/
-/media/
-
-# IDE/editor files
+# IDEs & OS
 .vscode/
-*.sublime-project
-*.sublime-workspace
-
-# OS files
+.idea/
 .DS_Store
-Thumbs.db
+
+# Logs
+*.log
+
+# Docker
+*.pid

@@ -1,90 +1,54 @@
 from rest_framework import serializers
-from .models import (
-    Ward, Room, Bed, Admission, VitalSign,
-    NursingNote, Round, ServiceUsage, DischargeSummary
-)
-
+from .models import Ward, Bed, Admission, Discharge, VitalSign
 
 class WardSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ward
         fields = '__all__'
 
-
-class RoomSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Room
-        fields = '__all__'
-
-
 class BedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bed
         fields = '__all__'
-        read_only_fields = ('is_available',)
-
-
-class AdmissionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Admission
-        fields = '__all__'
-        read_only_fields = ('id','admitted_by','admitted_at','status','discharged_at')
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        validated_data['admitted_by'] = user
-        return super().create(validated_data)
-
 
 class VitalSignSerializer(serializers.ModelSerializer):
+    recorded_by = serializers.ReadOnlyField(source='recorded_by.username')
     class Meta:
         model = VitalSign
         fields = '__all__'
-        read_only_fields = ('id','recorded_at','recorded_by')
+        read_only_fields = ('recorded_by','recorded_at')
 
-    def create(self, validated_data):
-        validated_data['recorded_by'] = self.context['request'].user
-        return super().create(validated_data)
-
-
-class NursingNoteSerializer(serializers.ModelSerializer):
+class AdmissionSerializer(serializers.ModelSerializer):
+    admitted_by = serializers.ReadOnlyField(source='admitted_by.username')
     class Meta:
-        model = NursingNote
+        model = Admission
         fields = '__all__'
-        read_only_fields = ('id','created_at','created_by')
+        read_only_fields = ('admitted_by','admitted_at','status')
 
     def create(self, validated_data):
-        validated_data['created_by'] = self.context['request'].user
-        return super().create(validated_data)
+        bed = validated_data['bed']
+        if bed.is_occupied:
+            raise serializers.ValidationError("Bed is already occupied.")
+        bed.is_occupied = True
+        bed.save()
+        admission = Admission.objects.create(**validated_data)
+        return admission
 
-
-class RoundSerializer(serializers.ModelSerializer):
+class DischargeSerializer(serializers.ModelSerializer):
+    discharged_by = serializers.ReadOnlyField(source='discharged_by.username')
     class Meta:
-        model = Round
+        model = Discharge
         fields = '__all__'
-        read_only_fields = ('id','at_time')
+        read_only_fields = ('discharged_by','discharged_at')
 
     def create(self, validated_data):
-        validated_data['doctor'] = self.context['request'].user
-        return super().create(validated_data)
-
-
-class ServiceUsageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ServiceUsage
-        fields = '__all__'
-        read_only_fields = ('id','created_at')
-
-    def create(self, validated_data):
-        return super().create(validated_data)
-
-
-class DischargeSummarySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = DischargeSummary
-        fields = '__all__'
-        read_only_fields = ('id','created_at','created_by')
-
-    def create(self, validated_data):
-        validated_data['created_by'] = self.context['request'].user
-        return super().create(validated_data)
+        admission = validated_data['admission']
+        if admission.status == 'discharged':
+            raise serializers.ValidationError("Already discharged.")
+        admission.status = 'discharged'
+        admission.save()
+        bed = admission.bed
+        bed.is_occupied = False
+        bed.save()
+        discharge = Discharge.objects.create(**validated_data)
+        return discharge

@@ -1,9 +1,8 @@
 from django.contrib import admin
-from .models import StockChange
+from .models import InventoryRecord
 
-@admin.register(StockChange)
-class StockChangeAdmin(admin.ModelAdmin):
-    list_display    = ('timestamp', 'user', 'medicine', 'batch', 'delta')
-    list_filter     = ('medicine', 'user')
-    search_fields   = ('medicine__name', 'batch__batch_number', 'note')
-    date_hierarchy  = 'timestamp'
+@admin.register(InventoryRecord)
+class InventoryRecordAdmin(admin.ModelAdmin):
+    list_display  = ('batch', 'current_quantity', 'updated_at')
+    list_filter   = ('updated_at',)
+    search_fields = ('batch__batch_no', 'batch__drug__name')

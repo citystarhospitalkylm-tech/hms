@@ -1,55 +1,84 @@
-import uuid
-from datetime import date
-from django.db import models, transaction
-from django.utils import timezone
-from apps.patients.models import Patient
-from django.contrib.auth import get_user_model
+# apps/appointments/models.py
 
-User = get_user_model()
+from django.conf import settings
+from django.db import models
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class Appointment(models.Model):
     class Status(models.TextChoices):
-        PENDING   = 'PENDING',   'Pending'
-        COMPLETED = 'COMPLETED', 'Completed'
-        CANCELED  = 'CANCELED',  'Canceled'
-        MISSED    = 'MISSED',    'Missed'
+        BOOKED   = "BOOKED", _("Booked")
+        CANCELLED = "CANCELLED", _("Cancelled")
+        VISITED  = "VISITED", _("Visited")
+        NO_SHOW  = "NO_SHOW", _("No-show")
 
-    id              = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    patient         = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='appointments')
-    doctor          = models.ForeignKey(User, on_delete=models.PROTECT, limit_choices_to={'role': User.Roles.DOCTOR})
-    scheduled_date  = models.DateField()
-    scheduled_time  = models.TimeField()
-    is_walkin       = models.BooleanField(default=False)
-    token           = models.PositiveIntegerField(editable=False)
-    status          = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
-    created_at      = models.DateTimeField(auto_now_add=True)
-    updated_at      = models.DateTimeField(auto_now=True)
+    patient = models.ForeignKey(
+        "patients.Patient",
+        on_delete=models.PROTECT,
+        related_name="appointments",
+    )
+    doctor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="doctor_appointments",
+    )
+    appointment_time = models.DateTimeField(_("Appointment Time"))
+    token_number = models.PositiveIntegerField(
+        _("Token Number"),
+        editable=False,
+        null=True,
+        blank=True,
+        help_text="Auto-generated per doctor per day",
+    )
+    status = models.CharField(
+        _("Status"),
+        max_length=10,
+        choices=Status.choices,
+        default=Status.BOOKED,
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="appointments_created",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        editable=False,
+    )
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="appointments_updated",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        editable=False,
+    )
 
     class Meta:
-        unique_together = (('scheduled_date', 'token'),)
-        ordering = ['scheduled_date', 'token']
+        ordering = ["appointment_time"]
+        unique_together = [
+            ("doctor", "appointment_time")
+        ]  # prevent double-book
+        permissions = [
+            ("view_appointment", "Can view appointment"),
+            ("add_appointment", "Can add appointment"),
+            ("change_appointment", "Can change appointment"),
+            ("delete_appointment", "Can delete appointment"),
+        ]
 
     def save(self, *args, **kwargs):
-        # For walk-ins: default to today/time
-        if self.is_walkin and not self.scheduled_date:
-            self.scheduled_date = date.today()
-        if self.is_walkin and not self.scheduled_time:
-            self.scheduled_time = timezone.now().time()
-
-        # Generate queue token per day
-        if not self.token:
-            with transaction.atomic():
-                last = (
-                    Appointment.objects
-                    .select_for_update()
-                    .filter(scheduled_date=self.scheduled_date)
-                    .order_by('token')
-                    .last()
-                )
-                self.token = last.token + 1 if last else 1
-
+        # Auto-assign token_number on create
+        if self._state.adding and self.token_number is None:
+            today = timezone.localdate()
+            count = Appointment.objects.filter(
+                doctor=self.doctor,
+                appointment_time__date=today
+            ).count()
+            self.token_number = count + 1
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.scheduled_date} [{self.token}] – {self.patient.patient_id}"
+        return f"{self.token_number} | {self.patient} @ {self.appointment_time}"

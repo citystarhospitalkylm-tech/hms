@@ -1,7 +1,9 @@
-from django.urls import path
-from .views import PatientListCreateView, PatientRetrieveUpdateDestroyView
+# apps/patients/urls.py
 
-urlpatterns = [
-    path('patients/',           PatientListCreateView.as_view(),           name='patient-list-create'),
-    path('patients/<uuid:id>/', PatientRetrieveUpdateDestroyView.as_view(), name='patient-detail'),
-]
+from rest_framework.routers import DefaultRouter
+from .views import PatientViewSet
+
+router = DefaultRouter()
+router.register(r"patients", PatientViewSet, basename="patient")
+
+urlpatterns = router.urls

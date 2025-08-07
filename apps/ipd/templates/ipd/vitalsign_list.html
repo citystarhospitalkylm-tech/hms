@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Vital Signs{% endblock %}
+{% block content %}
+  <h2>Vital Signs{% if admission %} for Admission #{{ admission.id }}{% endif %}</h2>
+
+  {% if admission %}
+    <a href="{% url 'vitalsign-list' %}create/?admission={{ admission.id }}">Record New Vital Sign</a>
+  {% else %}
+    <a href="{% url 'vitalsign-list' %}/create/">Record New Vital Sign</a>
+  {% endif %}
+
+  <table>
+    <thead>
+      <tr>
+        <th>Admission</th>
+        <th>Recorded At</th>
+        <th>Temperature (°C)</th>
+        <th>BP (S/D)</th>
+        <th>HR</th>
+        <th>RR</th>
+        <th>Recorded By</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for vs in vitalsigns %}
+      <tr>
+        <td>
+          <a href="{% url 'admission-detail' vs.admission.id %}">
+            #{{ vs.admission.id }}
+          </a>
+        </td>
+        <td>{{ vs.recorded_at }}</td>
+        <td>{{ vs.temperature }}</td>
+        <td>{{ vs.bp_systolic }}/{{ vs.bp_diastolic }}</td>
+        <td>{{ vs.heart_rate }}</td>
+        <td>{{ vs.respiratory_rate }}</td>
+        <td>{{ vs.recorded_by.username }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7">No vital signs recorded yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

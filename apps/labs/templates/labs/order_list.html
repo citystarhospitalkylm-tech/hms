@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Lab Orders{% endblock %}
+{% block content %}
+  <h2>Lab Orders</h2>
+  <a href="{% url 'laborder-list' %}/create/">New Order</a>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th><th>Patient</th><th>Test</th><th>Doctor</th>
+        <th>Ordered At</th><th>Status</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in lab_orders %}
+      <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.patient.full_name }}</td>
+        <td>{{ order.test.name }}</td>
+        <td>{{ order.doctor.get_full_name }}</td>
+        <td>{{ order.ordered_at }}</td>
+        <td>{{ order.get_status_display }}</td>
+        <td>
+          <a href="{% url 'laborder-update' order.id %}">Edit</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ object|default_if_none:"Add" }} Doctor{% endblock %}
+{% block content %}
+  <h2>{{ object|default_if_none:"Add" }} Doctor Profile</h2>
+  <form method="post">{% csrf_token %}
+    <label>User:<br>
+      <select name="user_id">
+        {% for u in users %}
+          <option value="{{ u.id }}"
+            {% if u.id|stringformat:"s" == form.user_id.value|stringformat:"s" %}selected{% endif %}>
+            {{ u.get_full_name }} ({{ u.username }})
+          </option>
+        {% endfor %}
+      </select>
+    </label><br>
+    <label>Specialty:<br><input type="text" name="specialty" value="{{ form.specialty.value }}"></label><br>
+    <label>Qualifications:<br><textarea name="qualifications">{{ form.qualifications.value }}</textarea></label><br>
+    <label>Phone:<br><input type="tel" name="phone" value="{{ form.phone.value }}"></label><br>
+    <label>Department:<br><input type="text" name="department" value="{{ form.department.value }}"></label><br>
+    <label>Status:<br>
+      <select name="status">
+        {% for val, label in form.status.field.choices %}
+          <option value="{{ val }}"
+            {% if val == form.status.value %}selected{% endif %}>
+            {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+    </label><br>
+    <button type="submit">Save</button>
+  </form>
+{% endblock %}

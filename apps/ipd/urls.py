@@ -1,22 +1,18 @@
-from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+from django.urls import path, include
 from .views import (
-    WardViewSet, RoomViewSet, BedViewSet, AdmissionViewSet,
-    VitalSignViewSet, NursingNoteViewSet, RoundViewSet,
-    ServiceUsageViewSet, DischargeSummaryViewSet
+    WardViewSet, BedViewSet,
+    AdmissionViewSet, DischargeViewSet,
+    VitalSignViewSet
 )
 
 router = DefaultRouter()
-router.register(r'wards', WardViewSet)
-router.register(r'rooms', RoomViewSet)
-router.register(r'beds', BedViewSet)
-router.register(r'admissions', AdmissionViewSet)
-router.register(r'vitals', VitalSignViewSet)
-router.register(r'nursing-notes', NursingNoteViewSet)
-router.register(r'rounds', RoundViewSet)
-router.register(r'services', ServiceUsageViewSet)
-router.register(r'discharges', DischargeSummaryViewSet)
+router.register(r'wards', WardViewSet, basename='ward')
+router.register(r'beds', BedViewSet, basename='bed')
+router.register(r'admissions', AdmissionViewSet, basename='admission')
+router.register(r'discharges', DischargeViewSet, basename='discharge')
+router.register(r'vitalsigns', VitalSignViewSet, basename='vitalsign')
 
 urlpatterns = [
-    path('ipd/', include(router.urls)),
+    path('api/ipd/', include(router.urls)),
 ]

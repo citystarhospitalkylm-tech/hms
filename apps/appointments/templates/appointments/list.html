@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Appointments{% endblock %}
+{% block content %}
+  <h2>Appointments</h2>
+  <a href="{% url 'appointment-list' %}/create/">Book Appointment</a>
+  <table>
+    <thead>
+      <tr>
+        <th>Token</th><th>Patient</th><th>Doctor</th>
+        <th>Time</th><th>Status</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for appt in appointments %}
+      <tr>
+        <td>{{ appt.token_number }}</td>
+        <td>{{ appt.patient.full_name }}</td>
+        <td>{{ appt.doctor.get_full_name }}</td>
+        <td>{{ appt.appointment_time }}</td>
+        <td>{{ appt.get_status_display }}</td>
+        <td>
+          <a href="{% url 'appointment-detail' appt.id %}">View</a> |
+          <a href="{% url 'appointment-update' appt.id %}">Edit</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

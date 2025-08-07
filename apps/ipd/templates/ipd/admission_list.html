@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Current Admissions</h2>
+<table class="table">
+  <thead><tr><th>Patient</th><th>Ward</th><th>Bed</th><th>Status</th></tr></thead>
+  <tbody>
+    {% for adm in admissions %}
+      <tr>
+        <td>{{ adm.patient.full_name }}</td>
+        <td>{{ adm.ward.name }}</td>
+        <td>{{ adm.bed.bed_number }}</td>
+        <td>{{ adm.get_status_display }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Admission #{{ admission.id }}</h2>
+<ul>
+  <li>Patient: {{ admission.patient.full_name }}</li>
+  <li>Ward/Bed: {{ admission.ward.name }} / {{ admission.bed.bed_number }}</li>
+  <li>Admitted At: {{ admission.admitted_at }}</li>
+  <li>Reason: {{ admission.reason }}</li>
+  <li>Status: {{ admission.get_status_display }}</li>
+</ul>
+<h3>Vital Signs</h3>
+<table class="table">
+  <thead><tr><th>Time</th><th>Temp</th><th>BP</th><th>HR</th><th>RR</th></tr></thead>
+  <tbody>
+    {% for vs in admission.vitals.all %}
+      <tr>
+        <td>{{ vs.recorded_at }}</td>
+        <td>{{ vs.temperature }}</td>
+        <td>{{ vs.bp_systolic }}/{{ vs.bp_diastolic }}</td>
+        <td>{{ vs.heart_rate }}</td>
+        <td>{{ vs.respiratory_rate }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

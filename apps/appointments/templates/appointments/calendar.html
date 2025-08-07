@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Appointment Calendar{% endblock %}
+{% block content %}
+  <h2>Doctor’s Daily Calendar</h2>
+  <form method="get">
+    <label>Date:<input type="date" name="date" value="{{ date }}"></label>
+    <button type="submit">Show</button>
+  </form>
+  <table>
+    <thead>
+      <tr><th>Time</th><th>Token</th><th>Patient</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for slot in slots %}
+      <tr>
+        <td>{{ slot.time }}</td>
+        <td>{{ slot.token }}</td>
+        <td>{{ slot.patient }}</td>
+        <td>{{ slot.status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

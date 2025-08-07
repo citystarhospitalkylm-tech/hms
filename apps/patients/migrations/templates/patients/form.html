@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ object|default_if_none:"Add" }} Patient{% endblock %}
+{% block content %}
+  <h2>{{ object|default_if_none:"Add" }} Patient</h2>
+  <form method="post">{% csrf_token %}
+    <label>First Name:<br><input type="text" name="first_name" value="{{ form.first_name.value }}"></label><br>
+    <label>Last Name:<br><input type="text" name="last_name" value="{{ form.last_name.value }}"></label><br>
+    <label>DOB:<br><input type="date" name="dob" value="{{ form.dob.value }}"></label><br>
+    <label>Gender:<br>
+      <select name="gender">
+        {% for code, label in form.gender.field.choices %}
+        <option value="{{ code }}" {% if code == form.gender.value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label><br>
+    <label>Blood Group:<br><input type="text" name="blood_group" value="{{ form.blood_group.value }}"></label><br>
+    <label>Allergies:<br><textarea name="allergies">{{ form.allergies.value }}</textarea></label><br>
+    <label>Phone Number:<br><input type="tel" name="phone_number" value="{{ form.phone_number.value }}"></label><br>
+    <button type="submit">Save</button>
+  </form>
+{% endblock %}

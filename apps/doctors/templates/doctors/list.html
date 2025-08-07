@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Doctors{% endblock %}
+{% block content %}
+  <h2>Doctors</h2>
+  <a href="{% url 'doctor-list' %}/create/">Add Doctor</a>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th><th>Specialty</th><th>Department</th><th>Status</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for doc in doctors %}
+      <tr>
+        <td>{{ doc.user.get_full_name }}</td>
+        <td>{{ doc.specialty }}</td>
+        <td>{{ doc.department }}</td>
+        <td>{{ doc.get_status_display }}</td>
+        <td>
+          <a href="{% url 'doctor-detail' doc.id %}">View</a> |
+          <a href="{% url 'doctor-update' doc.id %}">Edit</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

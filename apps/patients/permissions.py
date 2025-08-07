@@ -1,22 +1,18 @@
+# apps/patients/permissions.py
+
 from rest_framework import permissions
-from apps.users.models import User
 
 
-class PatientAccessPermission(permissions.BasePermission):
+class PatientPermissions(permissions.DjangoModelPermissions):
     """
-    GET: any authenticated user
-    POST/PUT/PATCH: receptionist or admin
-    DELETE: admin only
+    Map HTTP methods to custom 'patients' app permissions.
     """
-
-    def has_permission(self, request, view):
-        user = request.user
-        if not user or not user.is_authenticated:
-            return False
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        if request.method in ('POST', 'PUT', 'PATCH'):
-            return user.role in (User.Roles.RECEPTIONIST, User.Roles.ADMIN)
-        if request.method == 'DELETE':
-            return user.role == User.Roles.ADMIN
-        return False
+    perms_map = {
+        "GET": ["patients.view_patient"],
+        "OPTIONS": [],
+        "HEAD": [],
+        "POST": ["patients.add_patient"],
+        "PUT": ["patients.change_patient"],
+        "PATCH": ["patients.change_patient"],
+        "DELETE": ["patients.delete_patient"],
+    }

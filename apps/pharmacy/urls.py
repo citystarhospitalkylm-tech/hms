@@ -1,16 +1,18 @@
-from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+from django.urls import path, include
 from .views import (
-    MedicineViewSet, BatchViewSet,
-    PharmacySaleViewSet, SaleItemViewSet
+    SupplierViewSet, DrugCategoryViewSet, DrugViewSet,
+    StockViewSet, PrescriptionViewSet, DispenseViewSet
 )
 
 router = DefaultRouter()
-router.register(r'medicines', MedicineViewSet)
-router.register(r'batches',   BatchViewSet)
-router.register(r'sales',     PharmacySaleViewSet)
-router.register(r'sale-items', SaleItemViewSet, basename='saleitem')
+router.register(r'suppliers', SupplierViewSet)
+router.register(r'categories', DrugCategoryViewSet)
+router.register(r'drugs', DrugViewSet)
+router.register(r'stocks', StockViewSet)
+router.register(r'prescriptions', PrescriptionViewSet)
+router.register(r'dispensations', DispenseViewSet)
 
 urlpatterns = [
-    path('pharmacy/', include(router.urls)),
+    path('api/pharmacy/', include(router.urls)),
 ]

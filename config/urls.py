@@ -5,18 +5,26 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/auth/", include("accounts.urls")),       # token endpoints
-    path("api/accounts/", include("accounts.user_urls")),  # user/role management
-    path("api/patients/", include("patients.urls")),
-    path("api/appointments/", include("appointments.urls")),
-    path("api/consultations/", include("consultations.urls")),
-    path("api/pharmacy/", include("pharmacy.urls")),
-    path("api/billing/", include("billing.urls")),
-    path("api/ipd/", include("ipd.urls")),
-    path("api/reports/", include("reports.urls")),
-    # security endpoints (optional dashboard)
-    path("api/security/", include("security.urls")),
+
+    # Core modules
+    path("api/patients/", include("apps.patients.urls")),
+    path("api/appointments/", include("apps.appointments.urls")),
+    path("api/consultations/", include("apps.consultations.urls")),
+    path("api/pharmacy/", include("apps.pharmacy.urls")),
+    path("api/billing/", include("apps.billing.urls")),
+    path("api/ipd/", include("apps.ipd.urls")),
+    path("api/reports/", include("apps.reports.urls")),
+
+    # Optional modules
+    path("api/security/", include("apps.security.urls")),
+    
+    # Uncomment if user/role management is restored
+    # path("api/accounts/", include("apps.accounts.user_urls")),
+    
+    # Removed broken import
+    # path("api/auth/", include("accounts.urls")),
 ]
+
 
 # Serve media in development
 if settings.DEBUG:

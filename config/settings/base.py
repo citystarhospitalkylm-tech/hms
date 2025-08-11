@@ -16,6 +16,8 @@ ALLOWED_HOSTS = get_env("ALLOWED_HOSTS", "localhost").split(",")
 
 # APPLICATION DEFINITION
 INSTALLED_APPS = [
+    "corsheaders",
+
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -33,7 +35,7 @@ INSTALLED_APPS = [
     "apps.pharmacy",
     "apps.billing",
     #"apps.ipd",
-    "apps.security",
+    #"apps.security",
     "apps.doctors",
     "apps.inventory",
     "apps.labs",
@@ -58,7 +60,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # Audit & request‐tracking middleware
-    "security.middleware.RequestTrackingMiddleware",
+    "apps.security.middleware.RequestTrackingMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"

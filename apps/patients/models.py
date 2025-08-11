@@ -46,8 +46,10 @@ class Patient(models.Model):
         blank=True,
         editable=False,
     )
+    
 
     class Meta:
+        app_label = 'patients'
         ordering = ["-created_at"]
         permissions = [
             ("view_patient", "Can view patient"),

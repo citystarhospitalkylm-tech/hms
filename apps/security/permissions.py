@@ -18,13 +18,15 @@ class HasModelPermission(BasePermission):
     """
 
     def has_permission(self, request, view):
-        model = getattr(view, "queryset", None) and view.queryset.model
-        if model is None:
-            raise ImproperlyConfigured(
-                f"{view.__class__.__name__} must set `.queryset` or `.get_queryset()`."
-            )
-        perm = f"{model._meta.app_label}.{self._action_map[request.method]}"
-        return request.user.has_perm(perm)
+     model = getattr(view, "queryset", None) and view.queryset.model
+     if model is None:
+         raise ImproperlyConfigured(
+            f"{view.__class__.__name__} must set `.queryset` or `.get_queryset()`."
+        )
+     model_name = model._meta.model_name  # e.g. 'patient'
+     perm = f"{model._meta.app_label}.{self._action_map[request.method].format(model=model_name)}"
+     return request.user.has_perm(perm)
+ 
 
     _action_map = {
         "GET": "view_{model}",

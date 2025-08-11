@@ -1,9 +1,7 @@
 from rest_framework import viewsets, filters, permissions
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import (
-    Supplier, DrugCategory, Drug, Stock,
-    Prescription, Dispense
-)
+from .models import Supplier, DrugCategory, Drug, Batch, SaleItem
+
 from .serializers import (
     SupplierSerializer, DrugCategorySerializer, DrugSerializer,
     StockSerializer, PrescriptionSerializer, DispenseSerializer

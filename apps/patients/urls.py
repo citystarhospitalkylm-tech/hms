@@ -1,9 +1,12 @@
-# apps/patients/urls.py
-
 from rest_framework.routers import DefaultRouter
-from .views import PatientViewSet
 
 router = DefaultRouter()
-router.register(r"patients", PatientViewSet, basename="patient")
+
+# Lazy import inside a function to avoid premature model evaluation
+def get_patient_viewset():
+    from .views import PatientViewSet
+    return PatientViewSet
+
+router.register(r"patients", get_patient_viewset(), basename="patient")
 
 urlpatterns = router.urls

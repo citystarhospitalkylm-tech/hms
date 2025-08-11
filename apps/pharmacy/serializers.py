@@ -1,8 +1,6 @@
 from rest_framework import serializers
-from .models import (
-    Supplier, DrugCategory, Drug, Stock,
-    Prescription, PrescriptionItem, Dispense
-)
+from .models import Supplier, DrugCategory, Drug, Batch, SaleItem
+
 
 class SupplierSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,50 +22,50 @@ class DrugSerializer(serializers.ModelSerializer):
         model = Drug
         fields = ['id', 'name', 'description', 'unit_price', 'category', 'category_id', 'created_at']
 
-class StockSerializer(serializers.ModelSerializer):
-    drug = DrugSerializer(read_only=True)
-    drug_id = serializers.PrimaryKeyRelatedField(
-        queryset=Drug.objects.all(), source='drug', write_only=True
-    )
+#class StockSerializer(serializers.ModelSerializer):
+ #   drug = DrugSerializer(read_only=True)
+  #  drug_id = serializers.PrimaryKeyRelatedField(
+   #     queryset=Drug.objects.all(), source='drug', write_only=True
+    
 
-    class Meta:
-        model = Stock
-        fields = [
-            'id', 'drug', 'drug_id', 'batch_no', 'quantity',
-            'expiry_date', 'supplier', 'received_at'
-        ]
+  #  class Meta:
+   #     model = Stock
+    #    fields = [
+     #       'id', 'drug', 'drug_id', 'batch_no', 'quantity',
+      #      'expiry_date', 'supplier', 'received_at'
+        
 
-class PrescriptionItemSerializer(serializers.ModelSerializer):
-    drug = DrugSerializer(read_only=True)
-    drug_id = serializers.PrimaryKeyRelatedField(
-        queryset=Drug.objects.all(), source='drug', write_only=True
-    )
+#class PrescriptionItemSerializer(serializers.ModelSerializer):
+ #   drug = DrugSerializer(read_only=True)
+  #  drug_id = serializers.PrimaryKeyRelatedField(
+   #     queryset=Drug.objects.all(), source='drug', write_only=True
+    #)
 
-    class Meta:
-        model = PrescriptionItem
-        fields = ['id', 'drug', 'drug_id', 'dosage', 'quantity']
+    #lass Meta:
+    #    model = PrescriptionItem
+     #   fields = ['id', 'drug', 'drug_id', 'dosage', 'quantity']
 
-class PrescriptionSerializer(serializers.ModelSerializer):
-    items = PrescriptionItemSerializer(many=True)
+#class PrescriptionSerializer(serializers.ModelSerializer):
+ #   items = PrescriptionItemSerializer(many=True)
 
-    class Meta:
-        model = Prescription
-        fields = ['id', 'patient', 'prescribed_by', 'created_at', 'notes', 'items']
+  #  class Meta:
+   #     model = Prescription
+    #    fields = ['id', 'patient', 'prescribed_by', 'created_at', 'notes', 'items']
 
-    def create(self, validated_data):
-        items_data = validated_data.pop('items')
-        prescription = Prescription.objects.create(**validated_data)
-        for item in items_data:
-            PrescriptionItem.objects.create(prescription=prescription, **item)
-        return prescription
+    #def create(self, validated_data):
+     #   items_data = validated_data.pop('items')
+      #  prescription = Prescription.objects.create(**validated_data)
+       # for item in items_data:
+        #    PrescriptionItem.objects.create(prescription=prescription, **item)
+        #eturn prescription
 
-class DispenseSerializer(serializers.ModelSerializer):
-    prescription_item = PrescriptionItemSerializer(read_only=True)
-    prescription_item_id = serializers.PrimaryKeyRelatedField(
-        queryset=PrescriptionItem.objects.filter(dispense=None),
-        source='prescription_item', write_only=True
-    )
+#class DispenseSerializer(serializers.ModelSerializer):
+ #   prescription_item = PrescriptionItemSerializer(read_only=True)
+  #  prescription_item_id = serializers.PrimaryKeyRelatedField(
+   #     queryset=PrescriptionItem.objects.filter(dispense=None),
+    #    source='prescription_item', write_only=True
+    #)
 
-    class Meta:
-        model = Dispense
-        fields = ['id', 'prescription_item', 'prescription_item_id', 'dispensed_by', 'dispensed_at']
+ #   class Meta:
+#        model = Dispense
+  #      fields = ['id', 'prescription_item', 'prescription_item_id', 'dispensed_by', 'dispensed_at']

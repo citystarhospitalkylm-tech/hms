@@ -1,90 +1,76 @@
-import uuid
+# apps/consultations/models.py
+
 from django.db import models
-from django.utils import timezone
-from django.contrib.auth import get_user_model
-from apps.patients.models import Patient
 from django.conf import settings
 
-class Consultation(models.Model):
-    doctor = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        limit_choices_to={"role": "DOCTOR"},
-        related_name="consultations",
-    )
-    patient = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        limit_choices_to={"role": "PATIENT"},
-        related_name="patient_consultations",
-    )
-notes      = models.TextField(blank=True)
-created_at = models.DateTimeField(auto_now_add=True)
-
-class Meta:
-        ordering = ["-created_at"]
-        verbose_name = "Consultation"
-
-def __str__(self):
-        return f"{self.doctor.username} → {self.patient.username} @ {self.created_at.date()}"
-
-
-User = get_user_model()
+User = settings.AUTH_USER_MODEL  # e.g. "security.User"
 
 class Consultation(models.Model):
-    id             = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    patient        = models.ForeignKey(Patient, on_delete=models.PROTECT, related_name='consultations')
-    doctor         = models.ForeignKey(User, on_delete=models.PROTECT, limit_choices_to={'role': User.Roles.DOCTOR})
-    date           = models.DateField(default=timezone.now)
-    time           = models.TimeField(default=timezone.now)
-    symptoms       = models.TextField()
-    diagnosis      = models.TextField(blank=True)
-    treatment_plan = models.TextField(blank=True)
-    created_at     = models.DateTimeField(auto_now_add=True)
-    updated_at     = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ['-date', '-time']
-
-    def __str__(self):
-        return f"{self.date} {self.patient.patient_id} by {self.doctor.email}"
-
-class Prescription(models.Model):
-    consultation = models.OneToOneField(
-        Consultation, on_delete=models.CASCADE, related_name='prescription'
+    patient      = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        related_name="consultations_as_patient"
     )
-    created_at   = models.DateTimeField(auto_now_add=True)
-    created_by   = models.ForeignKey(User, on_delete=models.PROTECT)
+    doctor       = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        related_name="consultations_as_doctor"
+    )
+    scheduled_at = models.DateTimeField(db_index=True)
     notes        = models.TextField(blank=True)
 
+    class Meta:
+        db_table            = "consultations_consultation"
+        ordering            = ["-scheduled_at"]
+        verbose_name        = "Consultation"
+        verbose_name_plural = "Consultations"
+
     def __str__(self):
-        return f"Prescription for {self.consultation}"
+        return f"{self.scheduled_at:%Y-%m-%d %H:%M} | Dr. {self.doctor}"
+
+
+class Prescription(models.Model):
+    consultation  = models.ForeignKey(
+        Consultation,
+        on_delete=models.CASCADE,
+        related_name="prescriptions"
+    )
+    patient       = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        related_name="prescriptions_for_patient"
+    )
+    prescribed_by = models.ForeignKey(
+        User,
+        on_delete=models.PROTECT,
+        related_name="prescriptions_created"
+    )
+    created_at    = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table            = "consultations_prescription"
+        ordering            = ["-created_at"]
+        verbose_name        = "Prescription"
+        verbose_name_plural = "Prescriptions"
+
+    def __str__(self):
+        return f"Rx #{self.id} for {self.patient}"
+
 
 class PrescriptionItem(models.Model):
     prescription  = models.ForeignKey(
-        Prescription, on_delete=models.CASCADE, related_name='items'
+        Prescription,
+        on_delete=models.CASCADE,
+        related_name="items"
     )
-    medicine_name = models.CharField(max_length=200)
+    medication    = models.CharField(max_length=255)
     dosage        = models.CharField(max_length=100)
-    frequency     = models.CharField(max_length=100)
-    duration      = models.CharField(max_length=100)
+    instructions  = models.TextField(blank=True)
+
+    class Meta:
+        db_table            = "consultations_prescription_item"
+        verbose_name        = "Prescription Item"
+        verbose_name_plural = "Prescription Items"
 
     def __str__(self):
-        return f"{self.medicine_name} for {self.prescription}"
-
-class Referral(models.Model):
-    MODULE_CHOICES = (
-        ('LAB',       'Laboratory'),
-        ('RADIOLOGY', 'Radiology'),
-        ('OTHER',     'Other'),
-    )
-    consultation = models.ForeignKey(
-        Consultation, on_delete=models.CASCADE, related_name='referrals'
-    )
-    module       = models.CharField(max_length=10, choices=MODULE_CHOICES)
-    details      = models.TextField(blank=True)
-    referred_by  = models.ForeignKey(User, on_delete=models.PROTECT)
-    created_at   = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.module} referral for {self.consultation}"
+        return f"{self.medication} ({self.dosage})"

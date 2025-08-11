@@ -95,3 +95,4 @@ class SaleItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity_sold}×{self.batch.drug.name} on {self.sold_at.date()}"
+    print(dir())

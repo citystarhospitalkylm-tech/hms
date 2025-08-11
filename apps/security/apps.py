@@ -1,12 +1,12 @@
 from django.apps import AppConfig
 
-
 class SecurityConfig(AppConfig):
-    name = "apps.security"
-    default_auto_field = "django.db.models.BigAutoField"
-    verbose_name = "Security & Audit"
+    # This must match the import path of your app directory
+    name = 'apps.security'
+    # This is the “short” name Django uses to refer to your app
+    label = 'security'
+    verbose_name = 'Security'
 
     def ready(self):
-        if not hasattr(self, "_signals_loaded"):
-            import security.signals  # noqa
-            self._signals_loaded = True
+        # Import signals by full Python path
+        import apps.security.signals  # noqa

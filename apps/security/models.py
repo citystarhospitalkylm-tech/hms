@@ -1,13 +1,9 @@
-# apps/security/models.py
-
 from django.db import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
     PermissionsMixin,
     BaseUserManager
 )
-from django.contrib.postgres.fields import JSONField
-
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -23,7 +19,6 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(email, password, **extra_fields)
-
 
 class User(AbstractBaseUser, PermissionsMixin):
     """
@@ -54,7 +49,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.email} ({self.get_role_display()})"
 
-
 def log_user_action(sender, instance, **kwargs):
     """
     Stub for hooking into model saves/deletes to write AuditLog entries.
@@ -62,11 +56,10 @@ def log_user_action(sender, instance, **kwargs):
     """
     pass
 
-
 class BaseLog(models.Model):
     timestamp   = models.DateTimeField(auto_now_add=True, db_index=True)
     user        = models.ForeignKey(
-        User,
+        "apps_security.User",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -79,7 +72,6 @@ class BaseLog(models.Model):
         abstract  = True
         ordering  = ["-timestamp"]
 
-
 class AuditLog(BaseLog):
     action       = models.CharField(max_length=100, db_index=True)
     content_type = models.ForeignKey(
@@ -90,7 +82,7 @@ class AuditLog(BaseLog):
     )
     object_id    = models.CharField(max_length=255, blank=True)
     object_repr  = models.CharField(max_length=200, blank=True)
-    changes      = JSONField(default=dict, blank=True)
+    changes      = models.JSONField(default=dict, blank=True)
 
     class Meta:
         db_table             = "security_audit_log"
@@ -99,7 +91,6 @@ class AuditLog(BaseLog):
 
     def __str__(self):
         return f"{self.timestamp.isoformat()} | {self.user} | {self.action}"
-
 
 class RequestLog(BaseLog):
     path        = models.CharField(max_length=200)

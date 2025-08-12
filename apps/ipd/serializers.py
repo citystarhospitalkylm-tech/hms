@@ -12,14 +12,20 @@ class BedSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class VitalSignSerializer(serializers.ModelSerializer):
-    recorded_by = serializers.ReadOnlyField(source='recorded_by.username')
+    recorded_by = serializers.ReadOnlyField(source='recorded_by.email')
+
     class Meta:
         model = VitalSign
         fields = '__all__'
         read_only_fields = ('recorded_by','recorded_at')
 
+    def create(self, validated_data):
+        validated_data["recorded_by"] = self.context["request"].user
+        return super().create(validated_data)
+
 class AdmissionSerializer(serializers.ModelSerializer):
-    admitted_by = serializers.ReadOnlyField(source='admitted_by.username')
+    admitted_by = serializers.ReadOnlyField(source='admitted_by.email')
+
     class Meta:
         model = Admission
         fields = '__all__'
@@ -31,11 +37,12 @@ class AdmissionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Bed is already occupied.")
         bed.is_occupied = True
         bed.save()
-        admission = Admission.objects.create(**validated_data)
-        return admission
+        validated_data["admitted_by"] = self.context["request"].user
+        return Admission.objects.create(**validated_data)
 
 class DischargeSerializer(serializers.ModelSerializer):
-    discharged_by = serializers.ReadOnlyField(source='discharged_by.username')
+    discharged_by = serializers.ReadOnlyField(source='discharged_by.email')
+
     class Meta:
         model = Discharge
         fields = '__all__'
@@ -50,5 +57,5 @@ class DischargeSerializer(serializers.ModelSerializer):
         bed = admission.bed
         bed.is_occupied = False
         bed.save()
-        discharge = Discharge.objects.create(**validated_data)
-        return discharge
+        validated_data["discharged_by"] = self.context["request"].user
+        return Discharge.objects.create(**validated_data)

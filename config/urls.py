@@ -13,10 +13,11 @@ urlpatterns = [
     path("api/pharmacy/", include("apps.pharmacy.urls")),
     path("api/billing/", include("apps.billing.urls")),
     path("api/ipd/", include("apps.ipd.urls")),
-    path("api/reports/", include("apps.reports.urls")),
+   # path("api/reports/", include("apps.reports.urls")),
 
     # Optional modules
-    path("api/security/", include("apps.security.urls")),
+     path("api/v1/security/", include("apps.security.urls", namespace="security")),
+
     
     # Uncomment if user/role management is restored
     # path("api/accounts/", include("apps.accounts.user_urls")),

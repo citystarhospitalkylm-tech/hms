@@ -16,33 +16,34 @@ class LabTest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="labtests_created",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        editable=False,
-    )
-    updated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="labtests_updated",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        editable=False,
-    )
+    settings.AUTH_USER_MODEL,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    editable=False,
+    related_name="created_%(class)s_set",
+)
 
-    class Meta:
+updated_by = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    editable=False,
+    related_name="updated_%(class)s_set",
+)
+
+class Meta:
         ordering = ["code"]
-        permissions = [
-            ("view_labtest", "Can view lab test"),
-            ("add_labtest", "Can add lab test"),
-            ("change_labtest", "Can change lab test"),
-            ("delete_labtest", "Can delete lab test"),
-        ]
+       # permissions = [
+        #    ("view_labtest", "Can view lab test"),
+         #   ("add_labtest", "Can add lab test"),
+          #  ("change_labtest", "Can change lab test"),
+           # ("delete_labtest", "Can delete lab test"),
+        #]
 
-    def __str__(self):
-        return f"{self.code} – {self.name}"
+        def __str__(self):
+         return f"{self.code} – {self.name}"
 
 
 class LabOrder(models.Model):
@@ -101,12 +102,12 @@ class LabOrder(models.Model):
 
     class Meta:
         ordering = ["-ordered_at"]
-        permissions = [
-            ("view_laborder", "Can view lab order"),
-            ("add_laborder", "Can add lab order"),
-            ("change_laborder", "Can change lab order"),
-            ("delete_laborder", "Can delete lab order"),
-        ]
+      #  permissions = [
+       #     ("view_laborder", "Can view lab order"),
+        #    ("add_laborder", "Can add lab order"),
+         #   ("change_laborder", "Can change lab order"),
+          #  ("delete_laborder", "Can delete lab order"),
+        #]
 
     def __str__(self):
         return f"Order#{self.id} – {self.patient} / {self.test.name}"

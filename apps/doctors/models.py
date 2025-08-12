@@ -27,37 +27,37 @@ class Doctor(models.Model):
         default=Status.ACTIVE,
     )
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="doctors_created",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        editable=False,
-    )
-    updated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="doctors_updated",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        editable=False,
-    )
+   
 
-    class Meta:
+created_by = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    editable=False,
+    related_name="created_%(class)s_set",
+)
+
+updated_by = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    editable=False,
+    related_name="updated_%(class)s_set",
+)   
+class Meta:
         ordering = ["user__last_name", "user__first_name"]
-        permissions = [
-            ("view_doctor", "Can view doctor"),
-            ("add_doctor", "Can add doctor"),
-            ("change_doctor", "Can change doctor"),
-            ("delete_doctor", "Can delete doctor"),
-        ]
+        #permissions = [
+         #   ("view_doctor", "Can view doctor"),
+          #  ("add_doctor", "Can add doctor"),
+           # ("change_doctor", "Can change doctor"),
+            #("delete_doctor", "Can delete doctor"),
+       # ]
 
-    def __str__(self):
-        return f"Dr. {self.user.get_full_name()} – {self.specialty}"
+        def __str__(self):
+          return f"Dr. {self.user.get_full_name()} – {self.specialty}"
 
-    def save(self, *args, **kwargs):
+        def save(self, *args, **kwargs):
         # Ensure created_by / updated_by are set from context if passed
-        super().save(*args, **kwargs)
+          super().save(*args, **kwargs)

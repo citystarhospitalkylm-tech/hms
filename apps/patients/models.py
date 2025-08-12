@@ -1,15 +1,11 @@
-# apps/patients/models.py
-
 import uuid
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-
 def generate_mrn() -> str:
     """Auto-generate a unique MRN (first 10 chars of UUID4)."""
     return uuid.uuid4().hex[:10].upper()
-
 
 class Patient(models.Model):
     mrn = models.CharField(
@@ -31,32 +27,27 @@ class Patient(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="patients_created",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        editable=False,
-    )
-    updated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name="patients_updated",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        editable=False,
-    )
-    
+    settings.AUTH_USER_MODEL,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    editable=False,
+    related_name="created_%(class)s_set",
+)
 
-    class Meta:
+updated_by = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    editable=False,
+    related_name="updated_%(class)s_set",
+)
+
+
+class Meta:
         app_label = 'patients'
         ordering = ["-created_at"]
-        permissions = [
-            ("view_patient", "Can view patient"),
-            ("add_patient", "Can add patient"),
-            ("change_patient", "Can change patient"),
-            ("delete_patient", "Can delete patient"),
-        ]
 
-    def __str__(self):
-        return f"{self.mrn} – {self.first_name} {self.last_name}"
+        def __str__(self):
+         return f"{self.mrn} – {self.first_name} {self.last_name}"

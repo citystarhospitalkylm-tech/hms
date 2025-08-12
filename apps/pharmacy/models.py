@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.db.models import Sum
 
 class Supplier(models.Model):
     name          = models.CharField(max_length=255, unique=True)
@@ -16,7 +16,6 @@ class Supplier(models.Model):
     def __str__(self):
         return self.name
 
-
 class DrugCategory(models.Model):
     name        = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True)
@@ -28,7 +27,6 @@ class DrugCategory(models.Model):
 
     def __str__(self):
         return self.name
-
 
 class Drug(models.Model):
     name        = models.CharField(max_length=255)
@@ -50,7 +48,6 @@ class Drug(models.Model):
     def __str__(self):
         return f"{self.name} ({self.category.name})"
 
-
 class Batch(models.Model):
     drug        = models.ForeignKey(
         Drug,
@@ -64,7 +61,7 @@ class Batch(models.Model):
         blank=True,
         related_name="batches"
     )
-    batch_no    = models.CharField(max_length=100, unique=True)
+    batch_no    = models.CharField(max_length=100)  # unique per drug via Meta.unique_together
     expiry_date = models.DateField()
     quantity    = models.PositiveIntegerField()
     created_at  = models.DateTimeField(auto_now_add=True)
@@ -73,10 +70,18 @@ class Batch(models.Model):
         ordering = ["-expiry_date", "batch_no"]
         verbose_name = "Batch"
         verbose_name_plural = "Batches"
+        unique_together = ("drug", "batch_no")
 
     def __str__(self):
         return f"Batch {self.batch_no} – {self.drug.name}"
 
+    @property
+    def total_sold(self):
+        return self.sale_items.aggregate(total=Sum("quantity_sold"))["total"] or 0
+
+    @property
+    def available_quantity(self):
+        return self.quantity - self.total_sold
 
 class SaleItem(models.Model):
     batch         = models.ForeignKey(
@@ -95,4 +100,3 @@ class SaleItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity_sold}×{self.batch.drug.name} on {self.sold_at.date()}"
-    print(dir())

@@ -5,19 +5,19 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
-class User(AbstractUser):
-    """
-    Custom user extending Django’s AbstractUser.
-    Adds a 'role' field backed by a TextChoices enum.
-    """
+# Removed conflicting User model
 
-    class Roles(models.TextChoices):
+"""
+    Custom user extending Django’s AbstractUser.
+   Adds a 'role' field backed by a TextChoices enum.
+    """
+class Roles(models.TextChoices):
         ADMIN   = "ADMIN",   "Administrator"
         DOCTOR  = "DOCTOR",  "Doctor"
         NURSE   = "NURSE",   "Nurse"
         PATIENT = "PATIENT", "Patient"
 
-    role = models.CharField(
+        role = models.CharField(
         max_length=20,
         choices=Roles.choices,
         default=Roles.PATIENT,

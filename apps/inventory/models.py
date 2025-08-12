@@ -1,16 +1,15 @@
 from django.db import models
 
-
 class InventoryRecord(models.Model):
     """
     Tracks current stock position per drug batch,
     without importing pharmacy models directly.
     """
 
-    batch = models.ForeignKey(
+    batch = models.OneToOneField(
         "pharmacy.Batch",
         on_delete=models.PROTECT,
-        related_name="inventory_records"
+        related_name="inventory_record"
     )
     # Optionally link to the last sale item
     last_sale = models.ForeignKey(
@@ -24,7 +23,6 @@ class InventoryRecord(models.Model):
     updated_at       = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = [["batch"]]
         ordering = ["batch__drug__name"]
         verbose_name = "Inventory Record"
         verbose_name_plural = "Inventory Records"

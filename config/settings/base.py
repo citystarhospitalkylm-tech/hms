@@ -1,18 +1,27 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-
-# Load .env from project root
+from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-load_dotenv(BASE_DIR / ".env")
+
+
+load_dotenv()
+
+raw_cors_origins = os.getenv("RAW_CORS_ORIGINS", "")
+CORS_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in raw_cors_origins.split(",")
+    if origin.strip()
+]
+
 
 def get_env(var_name, default=None):
     return os.getenv(var_name, default)
 
 # SECURITY
 SECRET_KEY = get_env("DJANGO_SECRET_KEY", "change-me-in-production")
-DEBUG = False
-ALLOWED_HOSTS = get_env("ALLOWED_HOSTS", "localhost").split(",")
+DEBUG = get_env("DEBUG", "False").lower() == "true"
+ALLOWED_HOSTS = [host.strip() for host in get_env("ALLOWED_HOSTS", "localhost").split(",") if host.strip()]
 
 # APPLICATION DEFINITION
 INSTALLED_APPS = [
@@ -24,32 +33,25 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     "rest_framework",
     "rest_framework_simplejwt",
     "django_filters",
-    # Your apps (removed accounts idk y it was there)
-    
+
+    # Your apps
     "apps.patients",
     "apps.appointments",
-   # "apps.consultations",
     "apps.pharmacy",
     "apps.billing",
-    #"apps.ipd",
-    #"apps.security",
+    "apps.security",
     "apps.doctors",
     "apps.inventory",
     "apps.labs",
-   # "apps.users",
     "apps.consultations.apps.ConsultationsConfig",
     "apps.ipd.apps.IpdConfig",
     "apps.users.apps.UsersConfig",
-   #"apps.users.apps.AccountsConfig",
-    "apps.security.apps.SecurityConfig",
-
-    
-
 ]
-
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -59,6 +61,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+
     # Audit & request‐tracking middleware
     "apps.security.middleware.RequestTrackingMiddleware",
 ]
@@ -86,15 +89,15 @@ ASGI_APPLICATION = "config.asgi.application"
 
 # DATABASE
 DATABASES = {
-    "default": {
-        "ENGINE": get_env("DB_ENGINE", "django.db.backends.postgresql"),
-        "NAME": get_env("DB_NAME", "hospital"),
-        "USER": get_env("DB_USER", "postgres"),
-        "PASSWORD": get_env("DB_PASSWORD", ""),
-        "HOST": get_env("DB_HOST", "localhost"),
-        "PORT": get_env("DB_PORT", "5432"),
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'hospital_db',
+        'USER': 'hospital_user',  # or 'postgres'
+        'PASSWORD': 'securepassword',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
-}
+} 
 
 # PASSWORD VALIDATION
 AUTH_PASSWORD_VALIDATORS = [
@@ -106,9 +109,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # INTERNATIONALIZATION
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
+TIME_ZONE = get_env("TIME_ZONE", "UTC")
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 # STATIC & MEDIA
@@ -134,15 +136,15 @@ REST_FRAMEWORK = {
 
 # CORS
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = get_env("CORS_ALLOWED_ORIGINS", "").split(",")
+CORS_ALLOWED_ORIGINS = [origin.strip() for origin in get_env("CORS_ALLOWED_ORIGINS", "").split(",") if origin.strip()]
 
 # SimpleJWT
-from datetime import timedelta
-
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(get_env("JWT_ACCESS_LIFETIME", 15))),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=int(get_env("JWT_REFRESH_LIFETIME", 7))),
-    "JWT_ALGORITHM": "HS256",
+    "ALGORITHM": "HS256",
     "SIGNING_KEY": get_env("JWT_SECRET", SECRET_KEY),
 }
-AUTH_USER_MODEL="users.User"
+
+# Custom user model uses the app label from SecurityConfig (label="apps_security")
+AUTH_USER_MODEL = "apps_security.User"

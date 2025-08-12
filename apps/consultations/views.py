@@ -1,24 +1,59 @@
+# apps/consultations/views.py
+
+from django.http import JsonResponse
 from rest_framework import viewsets
 from .models import Consultation, Prescription, Referral
 from .serializers import (
-    ConsultationSerializer, PrescriptionSerializer, ReferralSerializer
+    ConsultationSerializer,
+    PrescriptionSerializer,
+    ReferralSerializer
 )
 from .permissions import ConsultationPermission
 
+
+def health_check(request):
+    """
+    Simple endpoint to verify the consultations module is up.
+    """
+    return JsonResponse({"status": "consultations module active"})
+
+
 class ConsultationViewSet(viewsets.ModelViewSet):
-    queryset           = Consultation.objects.select_related('patient','doctor').all()
-    serializer_class   = ConsultationSerializer
+    """
+    CRUD for Consultation. 
+    """
+    queryset = (
+        Consultation.objects
+        .select_related("patient", "doctor")
+        .prefetch_related("referrals", "prescriptions__items")
+        .all()
+    )
+    serializer_class = ConsultationSerializer
     permission_classes = [ConsultationPermission]
-    basename           = 'consultation'
+
 
 class PrescriptionViewSet(viewsets.ModelViewSet):
-    queryset           = Prescription.objects.select_related('consultation').all()
-    serializer_class   = PrescriptionSerializer
+    """
+    CRUD for Prescription and its nested items.
+    """
+    queryset = (
+        Prescription.objects
+        .select_related("consultation", "patient", "prescribed_by")
+        .prefetch_related("items")
+        .all()
+    )
+    serializer_class = PrescriptionSerializer
     permission_classes = [ConsultationPermission]
-    basename           = 'prescription'
+
 
 class ReferralViewSet(viewsets.ModelViewSet):
-    queryset           = Referral.objects.select_related('consultation').all()
-    serializer_class   = ReferralSerializer
+    """
+    CRUD for Referral records tied to a Consultation.
+    """
+    queryset = (
+        Referral.objects
+        .select_related("consultation", "referred_by")
+        .all()
+    )
+    serializer_class = ReferralSerializer
     permission_classes = [ConsultationPermission]
-    basename           = 'referral'

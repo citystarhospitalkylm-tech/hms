@@ -1,8 +1,5 @@
 from django.db import models
-from django.contrib.auth import get_user_model
-from django.utils import timezone
-
-User = get_user_model()
+from django.conf import settings
 
 class Ward(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -30,7 +27,7 @@ class Admission(models.Model):
     ]
 
     patient = models.ForeignKey('patients.Patient', on_delete=models.CASCADE)
-    admitted_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='admissions_made')
+    admitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='admissions_made')
     admitted_at = models.DateTimeField(auto_now_add=True)
     ward = models.ForeignKey(Ward, on_delete=models.PROTECT)
     bed = models.ForeignKey(Bed, on_delete=models.PROTECT)
@@ -38,11 +35,11 @@ class Admission(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='admitted')
 
     def __str__(self):
-        return f"Admission #{self.id} – {self.patient.full_name}"
+        return f"Admission #{self.id} – {self.patient}"
 
 class Discharge(models.Model):
     admission = models.OneToOneField(Admission, on_delete=models.CASCADE, related_name='discharge')
-    discharged_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='discharges_made')
+    discharged_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name='discharges_made')
     discharged_at = models.DateTimeField(auto_now_add=True)
     summary_notes = models.TextField(blank=True)
 
@@ -51,7 +48,7 @@ class Discharge(models.Model):
 
 class VitalSign(models.Model):
     admission = models.ForeignKey(Admission, on_delete=models.CASCADE, related_name='vitals')
-    recorded_by = models.ForeignKey(User, on_delete=models.PROTECT)
+    recorded_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     recorded_at = models.DateTimeField(auto_now_add=True)
     temperature = models.DecimalField(max_digits=4, decimal_places=1)  # °C
     bp_systolic = models.PositiveIntegerField()

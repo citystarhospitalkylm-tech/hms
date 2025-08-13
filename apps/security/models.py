@@ -4,7 +4,12 @@ from django.contrib.auth.models import (
     PermissionsMixin,
     BaseUserManager
 )
+from django.contrib.contenttypes.models import ContentType
 
+
+# -------------------------------
+# Custom User Manager
+# -------------------------------
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -20,29 +25,30 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault("is_superuser", True)
         return self.create_user(email, password, **extra_fields)
 
+
+# -------------------------------
+# Custom User Model
+# -------------------------------
 class User(AbstractBaseUser, PermissionsMixin):
-    """
-    Custom user with email login and role-based classification.
-    """
     class Roles(models.TextChoices):
-        ADMIN         = "ADMIN", "Admin"
-        DOCTOR        = "DOCTOR", "Doctor"
-        NURSE         = "NURSE", "Nurse"
-        RECEPTIONIST  = "RECEPTIONIST", "Receptionist"
-        PATIENT       = "PATIENT", "Patient"
+        ADMIN        = "ADMIN", "Admin"
+        DOCTOR       = "DOCTOR", "Doctor"
+        NURSE        = "NURSE", "Nurse"
+        RECEPTIONIST = "RECEPTIONIST", "Receptionist"
+        PATIENT      = "PATIENT", "Patient"
 
-    email     = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=150, blank=True)  # ✅ Add here
-    last_name  = models.CharField(max_length=150, blank=True)  # ✅ Add here
+    email      = models.EmailField(unique=True)
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name  = models.CharField(max_length=150, blank=True)
 
-    role      = models.CharField(
+    role       = models.CharField(
         max_length=20,
         choices=Roles.choices,
         default=Roles.PATIENT,
         db_index=True
     )
-    is_active = models.BooleanField(default=True)
-    is_staff  = models.BooleanField(default=False)
+    is_active  = models.BooleanField(default=True)
+    is_staff   = models.BooleanField(default=False)
 
     objects = CustomUserManager()
 
@@ -50,22 +56,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     class Meta:
-        app_label = 'apps_security'  # ✅ This tells Django the app label
+        app_label = "security"
 
     def __str__(self):
         return f"{self.email} ({self.get_role_display()})"
 
-def log_user_action(sender, instance, **kwargs):
-    """
-    Stub for hooking into model saves/deletes to write AuditLog entries.
-    Populate with thread/request-local user, diff, etc.
-    """
-    pass
 
+# -------------------------------
+# Base Log Model
+# -------------------------------
 class BaseLog(models.Model):
     timestamp   = models.DateTimeField(auto_now_add=True, db_index=True)
     user        = models.ForeignKey(
-        "apps_security.User",
+        "security.User",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -75,13 +78,17 @@ class BaseLog(models.Model):
     user_agent  = models.CharField(max_length=255, blank=True)
 
     class Meta:
-        abstract  = True
-        ordering  = ["-timestamp"]
+        abstract = True
+        ordering = ["-timestamp"]
 
+
+# -------------------------------
+# Audit Log
+# -------------------------------
 class AuditLog(BaseLog):
     action       = models.CharField(max_length=100, db_index=True)
     content_type = models.ForeignKey(
-        "contenttypes.ContentType",
+        ContentType,
         on_delete=models.SET_NULL,
         null=True,
         blank=True
@@ -98,6 +105,10 @@ class AuditLog(BaseLog):
     def __str__(self):
         return f"{self.timestamp.isoformat()} | {self.user} | {self.action}"
 
+
+# -------------------------------
+# Request Log
+# -------------------------------
 class RequestLog(BaseLog):
     path        = models.CharField(max_length=200)
     method      = models.CharField(max_length=10)
@@ -111,5 +122,14 @@ class RequestLog(BaseLog):
 
     def __str__(self):
         return f"{self.method} {self.path} [{self.status_code}]"
-    
-    
+
+
+# -------------------------------
+# Signal Stub (Optional)
+# -------------------------------
+def log_user_action(sender, instance, **kwargs):
+    """
+    Stub for hooking into model saves/deletes to write AuditLog entries.
+    Populate with thread/request-local user, diff, etc.
+    """
+    pass

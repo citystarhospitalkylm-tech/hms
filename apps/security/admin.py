@@ -1,20 +1,44 @@
 from django.contrib import admin
-from .models import AuditLog, RequestLog
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from apps.security.models import User
 
 
-@admin.register(AuditLog)
-class AuditLogAdmin(admin.ModelAdmin):
-    list_display = ("timestamp", "user", "action", "content_type", "object_id")
-    list_filter = ("action", "user", "content_type")
-    search_fields = ("object_repr", "changes")
-    date_hierarchy = "timestamp"
-    readonly_fields = [f.name for f in AuditLog._meta.fields]
+#@admin.register(User)
+class UserAdmin(BaseUserAdmin):
+    model = User
 
+    list_display = (
+        "email",
+        "first_name",
+        "last_name",
+        "role",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+    )
+    list_filter = (
+        "role",
+        "is_active",
+        "is_staff",
+        "is_superuser",
+    )
+    search_fields = (
+        "email",
+        "first_name",
+        "last_name",
+    )
+    ordering = ("email",)
 
-@admin.register(RequestLog)
-class RequestLogAdmin(admin.ModelAdmin):
-    list_display = ("timestamp", "user", "method", "path", "status_code", "duration_ms")
-    list_filter = ("method", "status_code", "user")
-    search_fields = ("path", "ip_address", "user_agent")
-    date_hierarchy = "timestamp"
-    readonly_fields = [f.name for f in RequestLog._meta.fields]
+    fieldsets = (
+        (None, {"fields": ("email", "password")}),
+        ("Personal Info", {"fields": ("first_name", "last_name", "role")}),
+        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")}),
+        ("Important Dates", {"fields": ("last_login",)}),
+    )
+
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": ("email", "password1", "password2", "role", "is_staff", "is_superuser"),
+        }),
+    )

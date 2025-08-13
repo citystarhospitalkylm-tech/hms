@@ -147,4 +147,4 @@ SIMPLE_JWT = {
 }
 
 # Custom user model uses the app label from SecurityConfig (label="apps_security")
-AUTH_USER_MODEL = "apps_security.User"
+AUTH_USER_MODEL = "security.User"

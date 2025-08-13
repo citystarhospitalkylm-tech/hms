@@ -1,5 +1,5 @@
 from rest_framework import permissions
-from apps.users.models import User
+from apps.security.models import User  # ✅ Correct location of your custom user model
 
 class ConsultationPermission(permissions.BasePermission):
     """

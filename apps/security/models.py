@@ -32,6 +32,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         PATIENT       = "PATIENT", "Patient"
 
     email     = models.EmailField(unique=True)
+    first_name = models.CharField(max_length=150, blank=True)  # ✅ Add here
+    last_name  = models.CharField(max_length=150, blank=True)  # ✅ Add here
+
     role      = models.CharField(
         max_length=20,
         choices=Roles.choices,
@@ -45,6 +48,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD  = "email"
     REQUIRED_FIELDS = []
+
+    class Meta:
+        app_label = 'apps_security'  # ✅ This tells Django the app label
 
     def __str__(self):
         return f"{self.email} ({self.get_role_display()})"
@@ -105,3 +111,5 @@ class RequestLog(BaseLog):
 
     def __str__(self):
         return f"{self.method} {self.path} [{self.status_code}]"
+    
+    

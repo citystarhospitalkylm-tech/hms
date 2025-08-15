@@ -36,6 +36,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         NURSE        = "NURSE", "Nurse"
         RECEPTIONIST = "RECEPTIONIST", "Receptionist"
         PATIENT      = "PATIENT", "Patient"
+        LAB          = "LAB","lab"
 
     email      = models.EmailField(unique=True)
     first_name = models.CharField(max_length=150, blank=True)

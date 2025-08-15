@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 ]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MIDDLEWARE = [
+    
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
@@ -63,7 +64,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 
     # Audit & request‐tracking middleware
-    "apps.security.middleware.RequestTrackingMiddleware",
+    #"apps.security.middleware.RequestTrackingMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -96,6 +97,7 @@ DATABASES = {
         'PASSWORD': 'securepassword',
         'HOST': 'localhost',
         'PORT': '5432',
+        'CONN_MAX_AGE':0,
     }
 } 
 
@@ -148,3 +150,27 @@ SIMPLE_JWT = {
 
 # Custom user model uses the app label from SecurityConfig (label="apps_security")
 AUTH_USER_MODEL = "security.User"
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+LOGIN_URL        = 'security:login'
+LOGIN_REDIRECT_URL = 'home'   # fallback
+LOGOUT_REDIRECT_URL = 'security:login'

@@ -3,11 +3,16 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from apps.security.views import home
+from .views import login_view
+app_name = "security"
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
 
     # Core modules
     path('', home),
+    path('login/', login_view, name='login'),
     path("api/patients/", include("apps.patients.urls")),
     path("api/appointments/", include("apps.appointments.urls")),
     path("api/consultations/", include("apps.consultations.urls")),
@@ -15,7 +20,7 @@ urlpatterns = [
     path("api/billing/", include("apps.billing.urls")),
     path("api/ipd/", include("apps.ipd.urls")),
    # path("api/reports/", include("apps.reports.urls")),
-
+    path('accounts/', include('security.urls', namespace='security')),
     # Optional modules
      path("api/v1/security/", include("apps.security.urls", namespace="security")),
 

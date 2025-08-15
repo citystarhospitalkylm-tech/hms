@@ -14,15 +14,15 @@ class Appointment(models.Model):
     ]
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='scheduled')
 
-    def save(self, *args, **kwargs):
-        if self._state.adding and self.token_number is None:
-            today = timezone.localdate()
-            count = Appointment.objects.filter(
-                doctor=self.doctor,
-                appointment_time__date=today
-            ).count()
-            self.token_number = count + 1
-        super().save(*args, **kwargs)
+ #   def save(self, *args, **kwargs):
+  #      if self._state.adding and self.token_number is None:
+   #         today = timezone.localdate()
+    #        count = Appointment.objects.filter(
+     #           doctor=self.doctor,
+      #          appointment_time__date=today
+       #     ).count()
+        #    self.token_number = count + 1
+        #super().save(*args, **kwargs)
 
     class Meta:
         ordering = ["appointment_time"]

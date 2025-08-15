@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from .views import (
+    login_view,
     LogoutView,
     PasswordChangeView,
     UserProfileView,

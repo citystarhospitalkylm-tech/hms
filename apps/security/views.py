@@ -6,7 +6,40 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.http import HttpResponse
+# security/views.py
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
+from .forms import RoleAuthenticationForm
+ROLE_DASHBOARD = {
+    'admin':    'admin:dashboard',
+    'doctor':   'doctor:dashboard',
+    'nurse':    'nurse:dashboard',
+    'lab':      'labs:dashboard',
+    'reception':'frontdesk:dashboard',
+    'pharma':   'pharmacy:dashboard',
+}
 
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect(ROLE_DASHBOARD.get(request.user.role, 'home'))
+    
+    form = RoleAuthenticationForm(request, data=request.POST or None)
+    if form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        return redirect(ROLE_DASHBOARD.get(user.role, 'home'))
+    
+    return render(request, 'security/login.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('security:login')
+
+
+def login_view(request):
+    form = RoleAuthenticationForm(request, data=request.POST or None)
+    # … rest of  logic
 def home(request):
     return HttpResponse("Hospital System is running. 🚀")
 

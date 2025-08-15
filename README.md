@@ -1,1 +1,2 @@
 # hms
+cleanenv/Scripts/activate

@@ -3,7 +3,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import UserSerializer, LoginSerializer
 from .models import User
+from django.shortcuts import render
+from config.rbac import require_module
 
+@require_module("users")
+def users_dashboard(request):
+    return render(request, "users/dashboard.html")
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = UserSerializer

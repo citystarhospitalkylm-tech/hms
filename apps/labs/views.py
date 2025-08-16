@@ -7,7 +7,12 @@ from rest_framework.permissions import IsAuthenticated
 from .models import LabTest, LabOrder
 from .serializers import LabTestSerializer, LabOrderSerializer
 from .permissions import LabTestPermissions, LabOrderPermissions
+from django.shortcuts import render
+from config.rbac import require_module
 
+@require_module("labs")
+def labs_dashboard(request):
+    return render(request, "labs/dashboard.html")
 
 class LabTestViewSet(viewsets.ModelViewSet):
     """

@@ -7,7 +7,12 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Appointment
 from .serializers import AppointmentSerializer
 from .permissions import AppointmentPermissions
+from django.shortcuts import render
+from config.rbac import require_module
 
+@require_module("appointments")
+def appointments_dashboard(request):
+    return render(request, "appointments/dashboard.html")
 
 class AppointmentViewSet(viewsets.ModelViewSet):
     """

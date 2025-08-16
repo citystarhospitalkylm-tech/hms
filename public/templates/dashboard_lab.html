@@ -1,0 +1,16 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Laboratory Dashboard</h2>
+
+<h3 class="font-semibold">Pending Tests</h3>
+<ul class="divide-y">
+{% for order in pending_tests %}
+  <li class="py-2">
+    {{ order.patient.first_name }} {{ order.patient.last_name }} — {{ order.test.name }}
+    (Ordered {{ order.ordered_at|date:"M d, Y H:i" }})
+  </li>
+{% empty %}
+  <li class="py-2 text-gray-500">No pending tests.</li>
+{% endfor %}
+</ul>
+{% endblock %}

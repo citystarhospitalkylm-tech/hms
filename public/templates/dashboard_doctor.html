@@ -1,0 +1,13 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Doctor Dashboard</h2>
+<p>Total patients: {{ patient_count }}</p>
+<h3 class="mt-6 font-semibold">Upcoming Appointments</h3>
+<ul class="divide-y">
+{% for appt in upcoming_appointments %}
+  <li class="py-2">{{ appt.appointment_time|date:"M d, Y H:i" }} — {{ appt.patient.first_name }} {{ appt.patient.last_name }}</li>
+{% empty %}
+  <li class="py-2 text-gray-500">No upcoming appointments.</li>
+{% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "dashboard_base.html" %}
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Billing Dashboard</h2>
+
+<h3 class="font-semibold">Outstanding Invoices</h3>
+<ul class="divide-y">
+{% for inv in outstanding_invoices %}
+  <li class="py-2">
+    {{ inv.patient.first_name }} {{ inv.patient.last_name }} — ₹{{ inv.outstanding_amount }}
+    (Due {{ inv.due_date|date:"M d, Y" }}) — Status: {{ inv.get_status_display }}
+  </li>
+{% empty %}
+  <li class="py-2 text-gray-500">No outstanding invoices.</li>
+{% endfor %}
+</ul>
+{% endblock %}

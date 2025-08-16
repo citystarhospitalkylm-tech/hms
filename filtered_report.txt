@@ -1,0 +1,1818 @@
+
+
+
+apps\appointments\templates\appointments\calendar.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,24 +1,32 @@
+
+ {% extends "base.html" %}
+ {% block title %}Appointment Calendar{% endblock %}
+ {% block content %}
+-  <h2>Doctor’s Daily Calendar</h2>
+-  <form method="get">
+-    <label>Date:<input type="date" name="date" value="{{ date }}"></label>
+-    <button type="submit">Show</button>
+-  </form>
+-  <table>
+-    <thead>
+-      <tr><th>Time</th><th>Token</th><th>Patient</th><th>Status</th></tr>
+-    </thead>
+-    <tbody>
+-      {% for slot in slots %}
+-      <tr>
+-        <td>{{ slot.time }}</td>
+-        <td>{{ slot.token }}</td>
+-        <td>{{ slot.patient }}</td>
+-        <td>{{ slot.status }}</td>
+-      </tr>
+-      {% endfor %}
+-    </tbody>
+-  </table>
++    <h2>Doctor’s Daily Calendar</h2>
++    <form method="get">
++        <label>
++            Date:
++            <input type="date" name="date" value="{{ date }}">
++        </label>
++        <button type="submit">Show</button>
++    </form>
++    <table>
++        <thead>
++            <tr>
++                <th>Time</th>
++                <th>Token</th>
++                <th>Patient</th>
++                <th>Status</th>
++            </tr>
++        </thead>
++        <tbody>
++            {% for slot in slots %}
++                <tr>
++                    <td>{{ slot.time }}</td>
++                    <td>{{ slot.token }}</td>
++                    <td>{{ slot.patient }}</td>
++                    <td>{{ slot.status }}</td>
++                </tr>
++            {% endfor %}
++        </tbody>
++    </table>
+ {% endblock %}
+
+apps\appointments\templates\appointments\calendar.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\appointments\templates\appointments\form.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,27 +1,43 @@
+
+ {% extends "base.html" %}
+ {% block title %}{{ object|default_if_none:"Book" }} Appointment{% endblock %}
+ {% block content %}
+-  <h2>{{ object|default_if_none:"Book" }} Appointment</h2>
+-  <form method="post">{% csrf_token %}
+-    <label>Patient:<br>
+-      <select name="patient">
+-        {% for p in patients %}
+-          <option value="{{ p.id }}" {% if p.id|stringformat:"s" == form.patient.value|stringformat:"s" %}selected{% endif %}>
+-            {{ p.full_name }}
+-          </option>
+-        {% endfor %}
+-      </select>
+-    </label><br>
+-    <label>Doctor:<br>
+-      <select name="doctor">
+-        {% for d in doctors %}
+-          <option value="{{ d.id }}" {% if d.id|stringformat:"s" == form.doctor.value|stringformat:"s" %}selected{% endif %}>
+-            {{ d.get_full_name }}
+-          </option>
+-        {% endfor %}
+-      </select>
+-    </label><br>
+-    <label>Time:<br><input type="datetime-local" name="appointment_time" value="{{ form.appointment_time.value }}"></label><br>
+-    <button type="submit">Save</button>
+-  </form>
++    <h2>{{ object|default_if_none:"Book" }} Appointment</h2>
++    <form method="post">
++        {% csrf_token %}
++        <label>
++            Patient:
++            <br>
++            <select name="patient">
++                {% for p in patients %}
++                    <option value="{{ p.id }}"
++                            {% if p.id|stringformat:"s" == form.patient.value|stringformat:"s" %}selected{% endif %}>
++                        {{ p.full_name }}
++                    </option>
++                {% endfor %}
++            </select>
++        </label>
++        <br>
++        <label>
++            Doctor:
++            <br>
++            <select name="doctor">
++                {% for d in doctors %}
++                    <option value="{{ d.id }}"
++                            {% if d.id|stringformat:"s" == form.doctor.value|stringformat:"s" %}selected{% endif %}>
++                        {{ d.get_full_name }}
++                    </option>
++                {% endfor %}
++            </select>
++        </label>
++        <br>
++        <label>
++            Time:
++            <br>
++            <input type="datetime-local"
++                   name="appointment_time"
++                   value="{{ form.appointment_time.value }}">
++        </label>
++        <br>
++        <button type="submit">Save</button>
++    </form>
+ {% endblock %}
+
+apps\appointments\templates\appointments\form.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\appointments\templates\appointments\list.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,29 +1,33 @@
+
+ {% extends "base.html" %}
+ {% block title %}Appointments{% endblock %}
+ {% block content %}
+-  <h2>Appointments</h2>
+-  <a href="{% url 'appointment-list' %}/create/">Book Appointment</a>
+-  <table>
+-    <thead>
+-      <tr>
+-        <th>Token</th><th>Patient</th><th>Doctor</th>
+-        <th>Time</th><th>Status</th><th>Actions</th>
+-      </tr>
+-    </thead>
+-    <tbody>
+-      {% for appt in appointments %}
+-      <tr>
+-        <td>{{ appt.token_number }}</td>
+-        <td>{{ appt.patient.full_name }}</td>
+-        <td>{{ appt.doctor.get_full_name }}</td>
+-        <td>{{ appt.appointment_time }}</td>
+-        <td>{{ appt.get_status_display }}</td>
+-        <td>
+-          <a href="{% url 'appointment-detail' appt.id %}">View</a> |
+-          <a href="{% url 'appointment-update' appt.id %}">Edit</a>
+-        </td>
+-      </tr>
+-      {% endfor %}
+-    </tbody>
+-  </table>
++    <h2>Appointments</h2>
++    <a href="{% url 'appointment-list' %}/create/">Book Appointment</a>
++    <table>
++        <thead>
++            <tr>
++                <th>Token</th>
++                <th>Patient</th>
++                <th>Doctor</th>
++                <th>Time</th>
++                <th>Status</th>
++                <th>Actions</th>
++            </tr>
++        </thead>
++        <tbody>
++            {% for appt in appointments %}
++                <tr>
++                    <td>{{ appt.token_number }}</td>
++                    <td>{{ appt.patient.full_name }}</td>
++                    <td>{{ appt.doctor.get_full_name }}</td>
++                    <td>{{ appt.appointment_time }}</td>
++                    <td>{{ appt.get_status_display }}</td>
++                    <td>
++                        <a href="{% url 'appointment-detail' appt.id %}">View</a> |
++                        <a href="{% url 'appointment-update' appt.id %}">Edit</a>
++                    </td>
++                </tr>
++            {% endfor %}
++        </tbody>
++    </table>
+ {% endblock %}
+
+apps\appointments\templates\appointments\list.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\billing\templates\billing\invoice.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,38 +1,49 @@
+
+ <!DOCTYPE html>
+ <html>
+-<head>
+-  <meta charset="utf-8">
+-  <title>Invoice {{ invoice.invoice_number }}</title>
+-  <style>
++    <head>
++        <meta charset="utf-8">
++        <title>Invoice {{ invoice.invoice_number }}</title>
++        <style>
+     /* Minimal print styling */
+     body { font-family: Arial, sans-serif; }
+     table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+     th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+     .right { text-align: right; }
+-  </style>
+-</head>
+-<body>
+-  <h1>Invoice {{ invoice.invoice_number }}</h1>
+-  <p>Patient: {{ invoice.patient.first_name }} {{ invoice.patient.last_name }} ({{ invoice.patient.patient_id }})</p>
+-  <p>Issued: {{ invoice.created_at.date }} | Due: {{ invoice.due_date }}</p>
+-
+-  <table>
+-    <thead>
+-      <tr><th>Description</th><th class="right">Amount</th></tr>
+-    </thead>
+-    <tbody>
+-      {% for item in invoice.items.all %}
+-      <tr>
+-        <td>{{ item.description }}</td>
+-        <td class="right">{{ item.amount }}</td>
+-      </tr>
+-      {% endfor %}
+-    </tbody>
+-    <tfoot>
+-      <tr><th>Total</th><th class="right">{{ invoice.total_amount }}</th></tr>
+-      <tr><th>Paid</th><th class="right">{{ invoice.paid_amount }}</th></tr>
+-      <tr><th>Due</th><th class="right">{{ invoice.outstanding_amount }}</th></tr>
+-    </tfoot>
+-  </table>
+-</body>
++        </style>
++    </head>
++    <body>
++        <h1>Invoice {{ invoice.invoice_number }}</h1>
++        <p>Patient: {{ invoice.patient.first_name }} {{ invoice.patient.last_name }} ({{ invoice.patient.patient_id }})</p>
++        <p>Issued: {{ invoice.created_at.date }} | Due: {{ invoice.due_date }}</p>
++        <table>
++            <thead>
++                <tr>
++                    <th>Description</th>
++                    <th class="right">Amount</th>
++                </tr>
++            </thead>
++            <tbody>
++                {% for item in invoice.items.all %}
++                    <tr>
++                        <td>{{ item.description }}</td>
++                        <td class="right">{{ item.amount }}</td>
++                    </tr>
++                {% endfor %}
++            </tbody>
++            <tfoot>
++                <tr>
++                    <th>Total</th>
++                    <th class="right">{{ invoice.total_amount }}</th>
++                </tr>
++                <tr>
++                    <th>Paid</th>
++                    <th class="right">{{ invoice.paid_amount }}</th>
++                </tr>
++                <tr>
++                    <th>Due</th>
++                    <th class="right">{{ invoice.outstanding_amount }}</th>
++                </tr>
++            </tfoot>
++        </table>
++    </body>
+ </html>
+
+apps\billing\templates\billing\invoice.html
+───────────────────────────────────────────────────────────────────────────────
+H005 2:0 Html tag should have lang attribute. <html> <head> <met
+
+apps\doctors\templates\doctors\detail.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,11 +1,21 @@
+
+ {% extends "base.html" %}
+ {% block title %}Doctor Detail{% endblock %}
+ {% block content %}
+-  <h2>Dr. {{ doctor.user.get_full_name }}</h2>
+-  <p><strong>Specialty:</strong> {{ doctor.specialty }}</p>
+-  <p><strong>Qualifications:</strong> {{ doctor.qualifications }}</p>
+-  <p><strong>Department:</strong> {{ doctor.department }}</p>
+-  <p><strong>Phone:</strong> {{ doctor.phone }}</p>
+-  <p><strong>Status:</strong> {{ doctor.get_status_display }}</p>
+-  <a href="{% url 'doctor-update' doctor.id %}">Edit Profile</a>
++    <h2>Dr. {{ doctor.user.get_full_name }}</h2>
++    <p>
++        <strong>Specialty:</strong> {{ doctor.specialty }}
++    </p>
++    <p>
++        <strong>Qualifications:</strong> {{ doctor.qualifications }}
++    </p>
++    <p>
++        <strong>Department:</strong> {{ doctor.department }}
++    </p>
++    <p>
++        <strong>Phone:</strong> {{ doctor.phone }}
++    </p>
++    <p>
++        <strong>Status:</strong> {{ doctor.get_status_display }}
++    </p>
++    <a href="{% url 'doctor-update' doctor.id %}">Edit Profile</a>
+ {% endblock %}
+
+apps\doctors\templates\doctors\detail.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\doctors\templates\doctors\form.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,32 +1,57 @@
+
+ {% extends "base.html" %}
+ {% block title %}{{ object|default_if_none:"Add" }} Doctor{% endblock %}
+ {% block content %}
+-  <h2>{{ object|default_if_none:"Add" }} Doctor Profile</h2>
+-  <form method="post">{% csrf_token %}
+-    <label>User:<br>
+-      <select name="user_id">
+-        {% for u in users %}
+-          <option value="{{ u.id }}"
+-            {% if u.id|stringformat:"s" == form.user_id.value|stringformat:"s" %}selected{% endif %}>
+-            {{ u.get_full_name }} ({{ u.username }})
+-          </option>
+-        {% endfor %}
+-      </select>
+-    </label><br>
+-    <label>Specialty:<br><input type="text" name="specialty" value="{{ form.specialty.value }}"></label><br>
+-    <label>Qualifications:<br><textarea name="qualifications">{{ form.qualifications.value }}</textarea></label><br>
+-    <label>Phone:<br><input type="tel" name="phone" value="{{ form.phone.value }}"></label><br>
+-    <label>Department:<br><input type="text" name="department" value="{{ form.department.value }}"></label><br>
+-    <label>Status:<br>
+-      <select name="status">
+-        {% for val, label in form.status.field.choices %}
+-          <option value="{{ val }}"
+-            {% if val == form.status.value %}selected{% endif %}>
+-            {{ label }}
+-          </option>
+-        {% endfor %}
+-      </select>
+-    </label><br>
+-    <button type="submit">Save</button>
+-  </form>
++    <h2>{{ object|default_if_none:"Add" }} Doctor Profile</h2>
++    <form method="post">
++        {% csrf_token %}
++        <label>
++            User:
++            <br>
++            <select name="user_id">
++                {% for u in users %}
++                    <option value="{{ u.id }}"
++                            {% if u.id|stringformat:"s" == form.user_id.value|stringformat:"s" %}selected{% endif %}>
++                        {{ u.get_full_name }} ({{ u.username }})
++                    </option>
++                {% endfor %}
++            </select>
++        </label>
++        <br>
++        <label>
++            Specialty:
++            <br>
++            <input type="text" name="specialty" value="{{ form.specialty.value }}">
++        </label>
++        <br>
++        <label>
++            Qualifications:
++            <br>
++            <textarea name="qualifications">{{ form.qualifications.value }}</textarea>
++        </label>
++        <br>
++        <label>
++            Phone:
++            <br>
++            <input type="tel" name="phone" value="{{ form.phone.value }}">
++        </label>
++        <br>
++        <label>
++            Department:
++            <br>
++            <input type="text" name="department" value="{{ form.department.value }}">
++        </label>
++        <br>
++        <label>
++            Status:
++            <br>
++            <select name="status">
++                {% for val, label in form.status.field.choices %}
++                    <option value="{{ val }}"
++                            {% if val == form.status.value %}selected{% endif %}>{{ label }}</option>
++                {% endfor %}
++            </select>
++        </label>
++        <br>
++        <button type="submit">Save</button>
++    </form>
+ {% endblock %}
+
+apps\doctors\templates\doctors\form.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\doctors\templates\doctors\list.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,27 +1,31 @@
+
+ {% extends "base.html" %}
+ {% block title %}Doctors{% endblock %}
+ {% block content %}
+-  <h2>Doctors</h2>
+-  <a href="{% url 'doctor-list' %}/create/">Add Doctor</a>
+-  <table>
+-    <thead>
+-      <tr>
+-        <th>Name</th><th>Specialty</th><th>Department</th><th>Status</th><th>Actions</th>
+-      </tr>
+-    </thead>
+-    <tbody>
+-      {% for doc in doctors %}
+-      <tr>
+-        <td>{{ doc.user.get_full_name }}</td>
+-        <td>{{ doc.specialty }}</td>
+-        <td>{{ doc.department }}</td>
+-        <td>{{ doc.get_status_display }}</td>
+-        <td>
+-          <a href="{% url 'doctor-detail' doc.id %}">View</a> |
+-          <a href="{% url 'doctor-update' doc.id %}">Edit</a>
+-        </td>
+-      </tr>
+-      {% endfor %}
+-    </tbody>
+-  </table>
++    <h2>Doctors</h2>
++    <a href="{% url 'doctor-list' %}/create/">Add Doctor</a>
++    <table>
++        <thead>
++            <tr>
++                <th>Name</th>
++                <th>Specialty</th>
++                <th>Department</th>
++                <th>Status</th>
++                <th>Actions</th>
++            </tr>
++        </thead>
++        <tbody>
++            {% for doc in doctors %}
++                <tr>
++                    <td>{{ doc.user.get_full_name }}</td>
++                    <td>{{ doc.specialty }}</td>
++                    <td>{{ doc.department }}</td>
++                    <td>{{ doc.get_status_display }}</td>
++                    <td>
++                        <a href="{% url 'doctor-detail' doc.id %}">View</a> |
++                        <a href="{% url 'doctor-update' doc.id %}">Edit</a>
++                    </td>
++                </tr>
++            {% endfor %}
++        </tbody>
++    </table>
+ {% endblock %}
+
+apps\doctors\templates\doctors\list.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\ipd\templates\ipd\admission_detail.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,26 +1,34 @@
+
+ {% extends "base.html" %}
+ {% block content %}
+-<h2>Admission #{{ admission.id }}</h2>
+-<ul>
+-  <li>Patient: {{ admission.patient.full_name }}</li>
+-  <li>Ward/Bed: {{ admission.ward.name }} / {{ admission.bed.bed_number }}</li>
+-  <li>Admitted At: {{ admission.admitted_at }}</li>
+-  <li>Reason: {{ admission.reason }}</li>
+-  <li>Status: {{ admission.get_status_display }}</li>
+-</ul>
+-<h3>Vital Signs</h3>
+-<table class="table">
+-  <thead><tr><th>Time</th><th>Temp</th><th>BP</th><th>HR</th><th>RR</th></tr></thead>
+-  <tbody>
+-    {% for vs in admission.vitals.all %}
+-      <tr>
+-        <td>{{ vs.recorded_at }}</td>
+-        <td>{{ vs.temperature }}</td>
+-        <td>{{ vs.bp_systolic }}/{{ vs.bp_diastolic }}</td>
+-        <td>{{ vs.heart_rate }}</td>
+-        <td>{{ vs.respiratory_rate }}</td>
+-      </tr>
+-    {% endfor %}
+-  </tbody>
+-</table>
++    <h2>Admission #{{ admission.id }}</h2>
++    <ul>
++        <li>Patient: {{ admission.patient.full_name }}</li>
++        <li>Ward/Bed: {{ admission.ward.name }} / {{ admission.bed.bed_number }}</li>
++        <li>Admitted At: {{ admission.admitted_at }}</li>
++        <li>Reason: {{ admission.reason }}</li>
++        <li>Status: {{ admission.get_status_display }}</li>
++    </ul>
++    <h3>Vital Signs</h3>
++    <table class="table">
++        <thead>
++            <tr>
++                <th>Time</th>
++                <th>Temp</th>
++                <th>BP</th>
++                <th>HR</th>
++                <th>RR</th>
++            </tr>
++        </thead>
++        <tbody>
++            {% for vs in admission.vitals.all %}
++                <tr>
++                    <td>{{ vs.recorded_at }}</td>
++                    <td>{{ vs.temperature }}</td>
++                    <td>{{ vs.bp_systolic }}/{{ vs.bp_diastolic }}</td>
++                    <td>{{ vs.heart_rate }}</td>
++                    <td>{{ vs.respiratory_rate }}</td>
++                </tr>
++            {% endfor %}
++        </tbody>
++    </table>
+ {% endblock %}
+
+apps\ipd\templates\ipd\admission_detail.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\ipd\templates\ipd\admission_list.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,17 +1,24 @@
+
+ {% extends "base.html" %}
+ {% block content %}
+-<h2>Current Admissions</h2>
+-<table class="table">
+-  <thead><tr><th>Patient</th><th>Ward</th><th>Bed</th><th>Status</th></tr></thead>
+-  <tbody>
+-    {% for adm in admissions %}
+-      <tr>
+-        <td>{{ adm.patient.full_name }}</td>
+-        <td>{{ adm.ward.name }}</td>
+-        <td>{{ adm.bed.bed_number }}</td>
+-        <td>{{ adm.get_status_display }}</td>
+-      </tr>
+-    {% endfor %}
+-  </tbody>
+-</table>
++    <h2>Current Admissions</h2>
++    <table class="table">
++        <thead>
++            <tr>
++                <th>Patient</th>
++                <th>Ward</th>
++                <th>Bed</th>
++                <th>Status</th>
++            </tr>
++        </thead>
++        <tbody>
++            {% for adm in admissions %}
++                <tr>
++                    <td>{{ adm.patient.full_name }}</td>
++                    <td>{{ adm.ward.name }}</td>
++                    <td>{{ adm.bed.bed_number }}</td>
++                    <td>{{ adm.get_status_display }}</td>
++                </tr>
++            {% endfor %}
++        </tbody>
++    </table>
+ {% endblock %}
+
+apps\ipd\templates\ipd\admission_list.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\ipd\templates\ipd\vitalsign_form.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,38 +1,59 @@
+
+ {% extends "base.html" %}
+ {% block title %}Record Vital Sign{% endblock %}
+ {% block content %}
+-  <h2>Record Vital Sign{% if admission %} for Admission #{{ admission.id }}{% endif %}</h2>
+-
+-  <form method="post">
+-    {% csrf_token %}
+-    {% if not admission %}
+-      <label>Admission ID:<br>
+-        <input type="number" name="admission" value="{{ form.admission.value }}">
+-      </label><br>
+-    {% else %}
+-      <input type="hidden" name="admission" value="{{ admission.id }}">
+-    {% endif %}
+-
+-    <label>Temperature (°C):<br>
+-      <input type="number" step="0.1" name="temperature" value="{{ form.temperature.value }}">
+-    </label><br>
+-
+-    <label>Blood Pressure - Systolic:<br>
+-      <input type="number" name="bp_systolic" value="{{ form.bp_systolic.value }}">
+-    </label><br>
+-
+-    <label>Blood Pressure - Diastolic:<br>
+-      <input type="number" name="bp_diastolic" value="{{ form.bp_diastolic.value }}">
+-    </label><br>
+-
+-    <label>Heart Rate:<br>
+-      <input type="number" name="heart_rate" value="{{ form.heart_rate.value }}">
+-    </label><br>
+-
+-    <label>Respiratory Rate:<br>
+-      <input type="number" name="respiratory_rate" value="{{ form.respiratory_rate.value }}">
+-    </label><br>
+-
+-    <button type="submit">Save Vital Sign</button>
+-  </form>
++    <h2>
++        Record Vital Sign
++        {% if admission %}for Admission #{{ admission.id }}{% endif %}
++    </h2>
++    <form method="post">
++        {% csrf_token %}
++        {% if not admission %}
++            <label>
++                Admission ID:
++                <br>
++                <input type="number" name="admission" value="{{ form.admission.value }}">
++            </label>
++            <br>
++        {% else %}
++            <input type="hidden" name="admission" value="{{ admission.id }}">
++        {% endif %}
++        <label>
++            Temperature (°C):
++            <br>
++            <input type="number"
++                   step="0.1"
++                   name="temperature"
++                   value="{{ form.temperature.value }}">
++        </label>
++        <br>
++        <label>
++            Blood Pressure - Systolic:
++            <br>
++            <input type="number" name="bp_systolic" value="{{ form.bp_systolic.value }}">
++        </label>
++        <br>
++        <label>
++            Blood Pressure - Diastolic:
++            <br>
++            <input type="number"
++                   name="bp_diastolic"
++                   value="{{ form.bp_diastolic.value }}">
++        </label>
++        <br>
++        <label>
++            Heart Rate:
++            <br>
++            <input type="number" name="heart_rate" value="{{ form.heart_rate.value }}">
++        </label>
++        <br>
++        <label>
++            Respiratory Rate:
++            <br>
++            <input type="number"
++                   name="respiratory_rate"
++                   value="{{ form.respiratory_rate.value }}">
++        </label>
++        <br>
++        <button type="submit">Save Vital Sign</button>
++    </form>
+ {% endblock %}
+
+apps\ipd\templates\ipd\vitalsign_form.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\ipd\templates\ipd\vitalsign_list.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,44 +1,45 @@
+
+ {% extends "base.html" %}
+ {% block title %}Vital Signs{% endblock %}
+ {% block content %}
+-  <h2>Vital Signs{% if admission %} for Admission #{{ admission.id }}{% endif %}</h2>
+-
+-  {% if admission %}
+-    <a href="{% url 'vitalsign-list' %}create/?admission={{ admission.id }}">Record New Vital Sign</a>
+-  {% else %}
+-    <a href="{% url 'vitalsign-list' %}/create/">Record New Vital Sign</a>
+-  {% endif %}
+-
+-  <table>
+-    <thead>
+-      <tr>
+-        <th>Admission</th>
+-        <th>Recorded At</th>
+-        <th>Temperature (°C)</th>
+-        <th>BP (S/D)</th>
+-        <th>HR</th>
+-        <th>RR</th>
+-        <th>Recorded By</th>
+-      </tr>
+-    </thead>
+-    <tbody>
+-      {% for vs in vitalsigns %}
+-      <tr>
+-        <td>
+-          <a href="{% url 'admission-detail' vs.admission.id %}">
+-            #{{ vs.admission.id }}
+-          </a>
+-        </td>
+-        <td>{{ vs.recorded_at }}</td>
+-        <td>{{ vs.temperature }}</td>
+-        <td>{{ vs.bp_systolic }}/{{ vs.bp_diastolic }}</td>
+-        <td>{{ vs.heart_rate }}</td>
+-        <td>{{ vs.respiratory_rate }}</td>
+-        <td>{{ vs.recorded_by.username }}</td>
+-      </tr>
+-      {% empty %}
+-      <tr><td colspan="7">No vital signs recorded yet.</td></tr>
+-      {% endfor %}
+-    </tbody>
+-  </table>
++    <h2>
++        Vital Signs
++        {% if admission %}for Admission #{{ admission.id }}{% endif %}
++    </h2>
++    {% if admission %}
++        <a href="{% url 'vitalsign-list' %}create/?admission={{ admission.id }}">Record New Vital Sign</a>
++    {% else %}
++        <a href="{% url 'vitalsign-list' %}/create/">Record New Vital Sign</a>
++    {% endif %}
++    <table>
++        <thead>
++            <tr>
++                <th>Admission</th>
++                <th>Recorded At</th>
++                <th>Temperature (°C)</th>
++                <th>BP (S/D)</th>
++                <th>HR</th>
++                <th>RR</th>
++                <th>Recorded By</th>
++            </tr>
++        </thead>
++        <tbody>
++            {% for vs in vitalsigns %}
++                <tr>
++                    <td>
++                        <a href="{% url 'admission-detail' vs.admission.id %}">#{{ vs.admission.id }}</a>
++                    </td>
++                    <td>{{ vs.recorded_at }}</td>
++                    <td>{{ vs.temperature }}</td>
++                    <td>{{ vs.bp_systolic }}/{{ vs.bp_diastolic }}</td>
++                    <td>{{ vs.heart_rate }}</td>
++                    <td>{{ vs.respiratory_rate }}</td>
++                    <td>{{ vs.recorded_by.username }}</td>
++                </tr>
++            {% empty %}
++                <tr>
++                    <td colspan="7">No vital signs recorded yet.</td>
++                </tr>
++            {% endfor %}
++        </tbody>
++    </table>
+ {% endblock %}
+
+apps\ipd\templates\ipd\vitalsign_list.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\labs\templates\labs\order_form.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,35 +1,48 @@
+
+ {% extends "base.html" %}
+ {% block title %}{{ object|default_if_none:"New" }} Lab Order{% endblock %}
+ {% block content %}
+-  <h2>{{ object|default_if_none:"New" }} Lab Order</h2>
+-  <form method="post">{% csrf_token %}
+-    <label>Patient:<br>
+-      <select name="patient">
+-        {% for p in patients %}
+-          <option value="{{ p.id }}" {% if p.id|stringformat:"s" == form.patient.value|stringformat:"s" %}selected{% endif %}>
+-            {{ p.full_name }}
+-          </option>
+-        {% endfor %}
+-      </select>
+-    </label><br>
+-    <label>Doctor:<br>
+-      <select name="doctor">
+-        {% for d in doctors %}
+-          <option value="{{ d.id }}" {% if d.id|stringformat:"s" == form.doctor.value|stringformat:"s" %}selected{% endif %}>
+-            {{ d.get_full_name }}
+-          </option>
+-        {% endfor %}
+-      </select>
+-    </label><br>
+-    <label>Test:<br>
+-      <select name="test">
+-        {% for t in lab_tests %}
+-          <option value="{{ t.id }}" {% if t.id|stringformat:"s" == form.test.value|stringformat:"s" %}selected{% endif %}>
+-            {{ t.name }}
+-          </option>
+-        {% endfor %}
+-      </select>
+-    </label><br>
+-    <button type="submit">Save</button>
+-  </form>
++    <h2>{{ object|default_if_none:"New" }} Lab Order</h2>
++    <form method="post">
++        {% csrf_token %}
++        <label>
++            Patient:
++            <br>
++            <select name="patient">
++                {% for p in patients %}
++                    <option value="{{ p.id }}"
++                            {% if p.id|stringformat:"s" == form.patient.value|stringformat:"s" %}selected{% endif %}>
++                        {{ p.full_name }}
++                    </option>
++                {% endfor %}
++            </select>
++        </label>
++        <br>
++        <label>
++            Doctor:
++            <br>
++            <select name="doctor">
++                {% for d in doctors %}
++                    <option value="{{ d.id }}"
++                            {% if d.id|stringformat:"s" == form.doctor.value|stringformat:"s" %}selected{% endif %}>
++                        {{ d.get_full_name }}
++                    </option>
++                {% endfor %}
++            </select>
++        </label>
++        <br>
++        <label>
++            Test:
++            <br>
++            <select name="test">
++                {% for t in lab_tests %}
++                    <option value="{{ t.id }}"
++                            {% if t.id|stringformat:"s" == form.test.value|stringformat:"s" %}selected{% endif %}>
++                        {{ t.name }}
++                    </option>
++                {% endfor %}
++            </select>
++        </label>
++        <br>
++        <button type="submit">Save</button>
++    </form>
+ {% endblock %}
+
+apps\labs\templates\labs\order_form.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\labs\templates\labs\order_list.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,29 +1,34 @@
+
+ {% extends "base.html" %}
+ {% block title %}Lab Orders{% endblock %}
+ {% block content %}
+-  <h2>Lab Orders</h2>
+-  <a href="{% url 'laborder-list' %}/create/">New Order</a>
+-  <table>
+-    <thead>
+-      <tr>
+-        <th>ID</th><th>Patient</th><th>Test</th><th>Doctor</th>
+-        <th>Ordered At</th><th>Status</th><th>Actions</th>
+-      </tr>
+-    </thead>
+-    <tbody>
+-      {% for order in lab_orders %}
+-      <tr>
+-        <td>{{ order.id }}</td>
+-        <td>{{ order.patient.full_name }}</td>
+-        <td>{{ order.test.name }}</td>
+-        <td>{{ order.doctor.get_full_name }}</td>
+-        <td>{{ order.ordered_at }}</td>
+-        <td>{{ order.get_status_display }}</td>
+-        <td>
+-          <a href="{% url 'laborder-update' order.id %}">Edit</a>
+-        </td>
+-      </tr>
+-      {% endfor %}
+-    </tbody>
+-  </table>
++    <h2>Lab Orders</h2>
++    <a href="{% url 'laborder-list' %}/create/">New Order</a>
++    <table>
++        <thead>
++            <tr>
++                <th>ID</th>
++                <th>Patient</th>
++                <th>Test</th>
++                <th>Doctor</th>
++                <th>Ordered At</th>
++                <th>Status</th>
++                <th>Actions</th>
++            </tr>
++        </thead>
++        <tbody>
++            {% for order in lab_orders %}
++                <tr>
++                    <td>{{ order.id }}</td>
++                    <td>{{ order.patient.full_name }}</td>
++                    <td>{{ order.test.name }}</td>
++                    <td>{{ order.doctor.get_full_name }}</td>
++                    <td>{{ order.ordered_at }}</td>
++                    <td>{{ order.get_status_display }}</td>
++                    <td>
++                        <a href="{% url 'laborder-update' order.id %}">Edit</a>
++                    </td>
++                </tr>
++            {% endfor %}
++        </tbody>
++    </table>
+ {% endblock %}
+
+apps\labs\templates\labs\order_list.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\labs\templates\labs\test_form.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,13 +1,40 @@
+
+ {% extends "base.html" %}
+ {% block title %}{{ object|default_if_none:"Add" }} Lab Test{% endblock %}
+ {% block content %}
+-  <h2>{{ object|default_if_none:"Add" }} Lab Test</h2>
+-  <form method="post">{% csrf_token %}
+-    <label>Code:<br><input name="code" value="{{ form.code.value }}"></label><br>
+-    <label>Name:<br><input name="name" value="{{ form.name.value }}"></label><br>
+-    <label>Description:<br><textarea name="description">{{ form.description.value }}</textarea></label><br>
+-    <label>Price:<br><input type="number" step="0.01" name="price" value="{{ form.price.value }}"></label><br>
+-    <label>Active:<input type="checkbox" name="is_active" {% if form.is_active.value %}checked{% endif %}></label><br>
+-    <button type="submit">Save</button>
+-  </form>
++    <h2>{{ object|default_if_none:"Add" }} Lab Test</h2>
++    <form method="post">
++        {% csrf_token %}
++        <label>
++            Code:
++            <br>
++            <input name="code" value="{{ form.code.value }}">
++        </label>
++        <br>
++        <label>
++            Name:
++            <br>
++            <input name="name" value="{{ form.name.value }}">
++        </label>
++        <br>
++        <label>
++            Description:
++            <br>
++            <textarea name="description">{{ form.description.value }}</textarea>
++        </label>
++        <br>
++        <label>
++            Price:
++            <br>
++            <input type="number" step="0.01" name="price" value="{{ form.price.value }}">
++        </label>
++        <br>
++        <label>
++            Active:
++            <input type="checkbox"
++                   name="is_active"
++                   {% if form.is_active.value %}checked{% endif %}>
++        </label>
++        <br>
++        <button type="submit">Save</button>
++    </form>
+ {% endblock %}
+
+apps\labs\templates\labs\test_form.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\labs\templates\labs\test_list.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,24 +1,30 @@
+
+ {% extends "base.html" %}
+ {% block title %}Lab Tests{% endblock %}
+ {% block content %}
+-  <h2>Lab Test Catalog</h2>
+-  <a href="{% url 'labtest-list' %}/create/">Add Test</a>
+-  <table>
+-    <thead>
+-      <tr><th>Code</th><th>Name</th><th>Price</th><th>Active</th><th>Actions</th></tr>
+-    </thead>
+-    <tbody>
+-      {% for test in lab_tests %}
+-      <tr>
+-        <td>{{ test.code }}</td>
+-        <td>{{ test.name }}</td>
+-        <td>{{ test.price }}</td>
+-        <td>{{ test.is_active }}</td>
+-        <td>
+-          <a href="{% url 'labtest-update' test.id %}">Edit</a>
+-        </td>
+-      </tr>
+-      {% endfor %}
+-    </tbody>
+-  </table>
++    <h2>Lab Test Catalog</h2>
++    <a href="{% url 'labtest-list' %}/create/">Add Test</a>
++    <table>
++        <thead>
++            <tr>
++                <th>Code</th>
++                <th>Name</th>
++                <th>Price</th>
++                <th>Active</th>
++                <th>Actions</th>
++            </tr>
++        </thead>
++        <tbody>
++            {% for test in lab_tests %}
++                <tr>
++                    <td>{{ test.code }}</td>
++                    <td>{{ test.name }}</td>
++                    <td>{{ test.price }}</td>
++                    <td>{{ test.is_active }}</td>
++                    <td>
++                        <a href="{% url 'labtest-update' test.id %}">Edit</a>
++                    </td>
++                </tr>
++            {% endfor %}
++        </tbody>
++    </table>
+ {% endblock %}
+
+apps\labs\templates\labs\test_list.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\pharmacy\templates\phamacy\dispense_detail.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,6 +1,9 @@
+
+ {% extends "base.html" %}
+ {% block content %}
+-<h2>Dispensation Confirmation</h2>
+-<p>Dispensed {{ dispense.prescription_item.drug.name }} x{{ dispense.prescription_item.quantity }} to {{ dispense.prescription_item.prescription.patient.full_name }} on {{ dispense.dispensed_at }}</p>
+-<a href="{% url 'pharmacy:dispensations-list' %}" class="btn btn-secondary">Back to list</a>
++    <h2>Dispensation Confirmation</h2>
++    <p>
++        Dispensed {{ dispense.prescription_item.drug.name }} x{{ dispense.prescription_item.quantity }} to {{ dispense.prescription_item.prescription.patient.full_name }} on {{ dispense.dispensed_at }}
++    </p>
++    <a href="{% url 'pharmacy:dispensations-list' %}"
++       class="btn btn-secondary">Back to list</a>
+ {% endblock %}
+
+apps\pharmacy\templates\phamacy\dispense_detail.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\pharmacy\templates\phamacy\drug_list.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,19 +1,26 @@
+
+ {% extends "base.html" %}
+ {% block content %}
+-<h2>Drugs Inventory</h2>
+-<table class="table">
+-  <thead>
+-    <tr><th>Name</th><th>Category</th><th>Unit Price</th><th>Actions</th></tr>
+-  </thead>
+-  <tbody>
+-  {% for drug in drugs %}
+-    <tr>
+-      <td>{{ drug.name }}</td>
+-      <td>{{ drug.category.name }}</td>
+-      <td>{{ drug.unit_price }}</td>
+-      <td><a href="{% url 'pharmacy:drug-detail' drug.id %}">View</a></td>
+-    </tr>
+-  {% endfor %}
+-  </tbody>
+-</table>
++    <h2>Drugs Inventory</h2>
++    <table class="table">
++        <thead>
++            <tr>
++                <th>Name</th>
++                <th>Category</th>
++                <th>Unit Price</th>
++                <th>Actions</th>
++            </tr>
++        </thead>
++        <tbody>
++            {% for drug in drugs %}
++                <tr>
++                    <td>{{ drug.name }}</td>
++                    <td>{{ drug.category.name }}</td>
++                    <td>{{ drug.unit_price }}</td>
++                    <td>
++                        <a href="{% url 'pharmacy:drug-detail' drug.id %}">View</a>
++                    </td>
++                </tr>
++            {% endfor %}
++        </tbody>
++    </table>
+ {% endblock %}
+
+apps\pharmacy\templates\phamacy\drug_list.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\pharmacy\templates\phamacy\prescription_create.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,14 +1,12 @@
+
+ {% extends "base.html" %}
+ {% load crispy_forms_tags %}
+ {% block content %}
+-<h2>Create Prescription</h2>
+-<form method="post">
+-  {% csrf_token %}
+-  {{ form|crispy }}
+-  {{ formset.management_form }}
+-  {% for subform in formset %}
+-    {{ subform|crispy }}
+-  {% endfor %}
+-  <button type="submit" class="btn btn-primary">Save</button>
+-</form>
++    <h2>Create Prescription</h2>
++    <form method="post">
++        {% csrf_token %}
++        {{ form|crispy }}
++        {{ formset.management_form }}
++        {% for subform in formset %}{{ subform|crispy }}{% endfor %}
++        <button type="submit" class="btn btn-primary">Save</button>
++    </form>
+ {% endblock %}
+
+apps\pharmacy\templates\phamacy\prescription_create.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\users\templates\users\user_form.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,11 +1,10 @@
+
+ {% extends "base.html" %}
+ {% block title %}{{ view.object|default:"Create" }} User{% endblock %}
+-
+ {% block content %}
+-<h2>{{ view.object|default:"Create" }} User</h2>
+-<form method="post">
+-  {% csrf_token %}
+-  {{ form.as_p }}
+-  <button type="submit">Save</button>
+-</form>
++    <h2>{{ view.object|default:"Create" }} User</h2>
++    <form method="post">
++        {% csrf_token %}
++        {{ form.as_p }}
++        <button type="submit">Save</button>
++    </form>
+ {% endblock %}
+
+apps\users\templates\users\user_form.html
+───────────────────────────────────────────────────────────────────────────────
+
+apps\users\templates\users\user_list.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,31 +1,37 @@
+
+ {% extends "base.html" %}
+ {% block title %}Users{% endblock %}
+-
+ {% block content %}
+-<h2>Users</h2>
+-<a href="{% url 'users:create' %}">Create New User</a>
+-<table>
+-  <thead>
+-    <tr>
+-      <th>ID</th><th>Username</th><th>Name</th><th>Email</th><th>Roles</th><th>Actions</th>
+-    </tr>
+-  </thead>
+-  <tbody>
+-    {% for user in users %}
+-    <tr>
+-      <td>{{ user.id }}</td>
+-      <td>{{ user.username }}</td>
+-      <td>{{ user.get_full_name }}</td>
+-      <td>{{ user.email }}</td>
+-      <td>{{ user.groups.all|join:", " }}</td>
+-      <td>
+-        <a href="{% url 'users:edit' user.id %}">Edit</a> |
+-        <a href="{% url 'users:delete' user.id %}">Delete</a>
+-      </td>
+-    </tr>
+-    {% empty %}
+-    <tr><td colspan="6">No users found.</td></tr>
+-    {% endfor %}
+-  </tbody>
+-</table>
++    <h2>Users</h2>
++    <a href="{% url 'users:create' %}">Create New User</a>
++    <table>
++        <thead>
++            <tr>
++                <th>ID</th>
++                <th>Username</th>
++                <th>Name</th>
++                <th>Email</th>
++                <th>Roles</th>
++                <th>Actions</th>
++            </tr>
++        </thead>
++        <tbody>
++            {% for user in users %}
++                <tr>
++                    <td>{{ user.id }}</td>
++                    <td>{{ user.username }}</td>
++                    <td>{{ user.get_full_name }}</td>
++                    <td>{{ user.email }}</td>
++                    <td>{{ user.groups.all|join:", " }}</td>
++                    <td>
++                        <a href="{% url 'users:edit' user.id %}">Edit</a> |
++                        <a href="{% url 'users:delete' user.id %}">Delete</a>
++                    </td>
++                </tr>
++            {% empty %}
++                <tr>
++                    <td colspan="6">No users found.</td>
++                </tr>
++            {% endfor %}
++        </tbody>
++    </table>
+ {% endblock %}
+
+apps\users\templates\users\user_list.html
+───────────────────────────────────────────────────────────────────────────────
+
+public\templates\dashboard_admin.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,17 +1,17 @@
+
+ {% extends "dashboard_base.html" %}
+ {% block content %}
+-<h2 class="text-2xl font-bold mb-4">Admin Dashboard</h2>
+-<div class="grid md:grid-cols-4 gap-4">
+-  <div class="p-4 bg-gray-100 rounded">Total Users: {{ user_count }}</div>
+-  <div class="p-4 bg-gray-100 rounded">Active Sessions: {{ active_sessions }}</div>
+-  <div class="p-4 bg-gray-100 rounded">Modules: {{ module_count }}</div>
+-</div>
+-<h3 class="mt-6 font-semibold">Recent User Logins</h3>
+-<ul class="list-disc ml-6">
+-{% for u in recent_users %}
+-  <li>{{ u.first_name }} {{ u.last_name }} — {{ u.email }} ({{ u.last_login|date:"M d, Y H:i" }})</li>
+-{% empty %}
+-  <li>No recent logins.</li>
+-{% endfor %}
+-</ul>
++    <h2 class="text-2xl font-bold mb-4">Admin Dashboard</h2>
++    <div class="grid md:grid-cols-4 gap-4">
++        <div class="p-4 bg-gray-100 rounded">Total Users: {{ user_count }}</div>
++        <div class="p-4 bg-gray-100 rounded">Active Sessions: {{ active_sessions }}</div>
++        <div class="p-4 bg-gray-100 rounded">Modules: {{ module_count }}</div>
++    </div>
++    <h3 class="mt-6 font-semibold">Recent User Logins</h3>
++    <ul class="list-disc ml-6">
++        {% for u in recent_users %}
++            <li>{{ u.first_name }} {{ u.last_name }} — {{ u.email }} ({{ u.last_login|date:"M d, Y H:i" }})</li>
++        {% empty %}
++            <li>No recent logins.</li>
++        {% endfor %}
++    </ul>
+ {% endblock %}
+
+public\templates\dashboard_admin.html
+───────────────────────────────────────────────────────────────────────────────
+
+public\templates\dashboard_appointments.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,16 +1,15 @@
+
+ {% extends "dashboard_base.html" %}
+ {% block content %}
+-<h2 class="text-2xl font-bold mb-4">Appointments Dashboard</h2>
+-
+-<h3 class="font-semibold">Upcoming Appointments</h3>
+-<ul class="divide-y">
+-{% for appt in upcoming %}
+-  <li class="py-2">
+-    {{ appt.appointment_time|date:"M d, Y H:i" }} — {{ appt.patient.first_name }} {{ appt.patient.last_name }}
+-    with Dr. {{ appt.doctor.first_name }} {{ appt.doctor.last_name }}
+-  </li>
+-{% empty %}
+-  <li class="py-2 text-gray-500">No appointments scheduled.</li>
+-{% endfor %}
+-</ul>
++    <h2 class="text-2xl font-bold mb-4">Appointments Dashboard</h2>
++    <h3 class="font-semibold">Upcoming Appointments</h3>
++    <ul class="divide-y">
++        {% for appt in upcoming %}
++            <li class="py-2">
++                {{ appt.appointment_time|date:"M d, Y H:i" }} — {{ appt.patient.first_name }} {{ appt.patient.last_name }}
++                with Dr. {{ appt.doctor.first_name }} {{ appt.doctor.last_name }}
++            </li>
++        {% empty %}
++            <li class="py-2 text-gray-500">No appointments scheduled.</li>
++        {% endfor %}
++    </ul>
+ {% endblock %}
+
+public\templates\dashboard_appointments.html
+───────────────────────────────────────────────────────────────────────────────
+
+public\templates\dashboard_base.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,48 +1,43 @@
+
+ {% load static %}
+ <!DOCTYPE html>
+ <html lang="en">
+-<head>
+-  <meta charset="UTF-8">
+-  <title>{{ role }} Dashboard</title>
+-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+-  <script src="https://cdn.tailwindcss.com"></script>
+-</head>
+-<body class="bg-gray-50 text-gray-900">
+-
+-  <!-- Top Navbar -->
+-  <header class="bg-white shadow">
+-    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+-      <h1 class="text-xl font-bold">{{ role }} Dashboard</h1>
+-      <nav class="space-x-4">
+-        <a href="/" class="text-gray-700 hover:text-blue-600">Home</a>
+-        <a href="{% url 'logout' %}" class="text-gray-700 hover:text-blue-600">Logout</a>
+-      </nav>
+-    </div>
+-  </header>
+-
+-  <div class="flex">
+-    <!-- Sidebar -->
+-    <aside class="hidden md:block w-64 bg-gray-100 min-h-screen p-4">
+-      <nav class="space-y-2">
+-        {% for r in roles %}
+-          <a href="{{ ROLE_REDIRECTS|get_item:r.slug }}"
+-             class="block px-3 py-2 rounded {{ role|lower == r.slug|lower|yesno:'bg-blue-500 text-white,bg-gray-200 text-gray-800' }}">
+-            {{ r.name }}
+-          </a>
+-        {% endfor %}
+-      </nav>
+-    </aside>
+-
+-    <!-- Main Content -->
+-    <main class="flex-1 p-6">
+-      {% block content %}{% endblock %}
+-    </main>
+-  </div>
+-
+-  <!-- Footer -->
+-  <footer class="bg-white border-t mt-6 py-4 text-center text-sm text-gray-500">
+-    &copy; {{ now|date:"Y" }} Hospital Management System. All rights reserved.
+-  </footer>
+-
+-</body>
++    <head>
++        <meta charset="UTF-8">
++        <title>{{ role }} Dashboard</title>
++        <meta name="viewport" content="width=device-width, initial-scale=1.0">
++        <script src="https://cdn.tailwindcss.com"></script>
++    </head>
++    <body class="bg-gray-50 text-gray-900">
++        <!-- Top Navbar -->
++        <header class="bg-white shadow">
++            <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
++                <h1 class="text-xl font-bold">{{ role }} Dashboard</h1>
++                <nav class="space-x-4">
++                    <a href="/" class="text-gray-700 hover:text-blue-600">Home</a>
++                    <a href="{% url 'logout' %}" class="text-gray-700 hover:text-blue-600">Logout</a>
++                </nav>
++            </div>
++        </header>
++        <div class="flex">
++            <!-- Sidebar -->
++            <aside class="hidden md:block w-64 bg-gray-100 min-h-screen p-4">
++                <nav class="space-y-2">
++                    {% for r in roles %}
++                        <a href="{{ ROLE_REDIRECTS|get_item:r.slug }}"
++                           class="block px-3 py-2 rounded {{ role|lower == r.slug|lower|yesno:'bg-blue-500 text-white,bg-gray-200 text-gray-800' }}">
++                            {{ r.name }}
++                        </a>
++                    {% endfor %}
++                </nav>
++            </aside>
++            <!-- Main Content -->
++            <main class="flex-1 p-6">
++                {% block content %}{% endblock %}
++            </main>
++        </div>
++        <!-- Footer -->
++        <footer class="bg-white border-t mt-6 py-4 text-center text-sm text-gray-500">
++            &copy; {{ now|date:"Y" }} Hospital Management System. All rights reserved.
++        </footer>
++    </body>
+ </html>
+
+public\templates\dashboard_base.html
+───────────────────────────────────────────────────────────────────────────────
+D018 17:8 (Django) Internal links should use the {% url ... %} pattern. <a href="/
+H023 44:4 Do not use entity references. &copy;
+
+public\templates\dashboard_billing.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,16 +1,15 @@
+
+ {% extends "dashboard_base.html" %}
+ {% block content %}
+-<h2 class="text-2xl font-bold mb-4">Billing Dashboard</h2>
+-
+-<h3 class="font-semibold">Outstanding Invoices</h3>
+-<ul class="divide-y">
+-{% for inv in outstanding_invoices %}
+-  <li class="py-2">
+-    {{ inv.patient.first_name }} {{ inv.patient.last_name }} — ₹{{ inv.outstanding_amount }}
+-    (Due {{ inv.due_date|date:"M d, Y" }}) — Status: {{ inv.get_status_display }}
+-  </li>
+-{% empty %}
+-  <li class="py-2 text-gray-500">No outstanding invoices.</li>
+-{% endfor %}
+-</ul>
++    <h2 class="text-2xl font-bold mb-4">Billing Dashboard</h2>
++    <h3 class="font-semibold">Outstanding Invoices</h3>
++    <ul class="divide-y">
++        {% for inv in outstanding_invoices %}
++            <li class="py-2">
++                {{ inv.patient.first_name }} {{ inv.patient.last_name }} — ₹{{ inv.outstanding_amount }}
++                (Due {{ inv.due_date|date:"M d, Y" }}) — Status: {{ inv.get_status_display }}
++            </li>
++        {% empty %}
++            <li class="py-2 text-gray-500">No outstanding invoices.</li>
++        {% endfor %}
++    </ul>
+ {% endblock %}
+
+public\templates\dashboard_billing.html
+───────────────────────────────────────────────────────────────────────────────
+
+public\templates\dashboard_consultations.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,18 +1,20 @@
+
+ {% extends "dashboard_base.html" %}
+ {% block content %}
+-<h2 class="text-2xl font-bold mb-4">Consultations Dashboard</h2>
+-
+-<h3 class="font-semibold">Recent Consultations</h3>
+-<ul class="divide-y">
+-{% for consult in recent_consults %}
+-  <li class="py-2">
+-    {{ consult.scheduled_at|date:"M d, Y H:i" }} —
+-    {{ consult.patient.first_name }} {{ consult.patient.last_name }}
+-    with Dr. {{ consult.doctor.first_name }} {{ consult.doctor.last_name }}
+-    {% if consult.notes %}<br><span class="text-gray-600">Notes: {{ consult.notes|truncatechars:60 }}</span>{% endif %}
+-  </li>
+-{% empty %}
+-  <li class="py-2 text-gray-500">No recent consultations.</li>
+-{% endfor %}
+-</ul>
++    <h2 class="text-2xl font-bold mb-4">Consultations Dashboard</h2>
++    <h3 class="font-semibold">Recent Consultations</h3>
++    <ul class="divide-y">
++        {% for consult in recent_consults %}
++            <li class="py-2">
++                {{ consult.scheduled_at|date:"M d, Y H:i" }} —
++                {{ consult.patient.first_name }} {{ consult.patient.last_name }}
++                with Dr. {{ consult.doctor.first_name }} {{ consult.doctor.last_name }}
++                {% if consult.notes %}
++                    <br>
++                    <span class="text-gray-600">Notes: {{ consult.notes|truncatechars:60 }}</span>
++                {% endif %}
++            </li>
++        {% empty %}
++            <li class="py-2 text-gray-500">No recent consultations.</li>
++        {% endfor %}
++    </ul>
+ {% endblock %}
+
+public\templates\dashboard_consultations.html
+───────────────────────────────────────────────────────────────────────────────
+
+public\templates\dashboard_doctor.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,13 +1,15 @@
+
+ {% extends "dashboard_base.html" %}
+ {% block content %}
+-<h2 class="text-2xl font-bold mb-4">Doctor Dashboard</h2>
+-<p>Total patients: {{ patient_count }}</p>
+-<h3 class="mt-6 font-semibold">Upcoming Appointments</h3>
+-<ul class="divide-y">
+-{% for appt in upcoming_appointments %}
+-  <li class="py-2">{{ appt.appointment_time|date:"M d, Y H:i" }} — {{ appt.patient.first_name }} {{ appt.patient.last_name }}</li>
+-{% empty %}
+-  <li class="py-2 text-gray-500">No upcoming appointments.</li>
+-{% endfor %}
+-</ul>
++    <h2 class="text-2xl font-bold mb-4">Doctor Dashboard</h2>
++    <p>Total patients: {{ patient_count }}</p>
++    <h3 class="mt-6 font-semibold">Upcoming Appointments</h3>
++    <ul class="divide-y">
++        {% for appt in upcoming_appointments %}
++            <li class="py-2">
++                {{ appt.appointment_time|date:"M d, Y H:i" }} — {{ appt.patient.first_name }} {{ appt.patient.last_name }}
++            </li>
++        {% empty %}
++            <li class="py-2 text-gray-500">No upcoming appointments.</li>
++        {% endfor %}
++    </ul>
+ {% endblock %}
+
+public\templates\dashboard_doctor.html
+───────────────────────────────────────────────────────────────────────────────
+
+public\templates\dashboard_lab.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,16 +1,15 @@
+
+ {% extends "dashboard_base.html" %}
+ {% block content %}
+-<h2 class="text-2xl font-bold mb-4">Laboratory Dashboard</h2>
+-
+-<h3 class="font-semibold">Pending Tests</h3>
+-<ul class="divide-y">
+-{% for order in pending_tests %}
+-  <li class="py-2">
+-    {{ order.patient.first_name }} {{ order.patient.last_name }} — {{ order.test.name }}
+-    (Ordered {{ order.ordered_at|date:"M d, Y H:i" }})
+-  </li>
+-{% empty %}
+-  <li class="py-2 text-gray-500">No pending tests.</li>
+-{% endfor %}
+-</ul>
++    <h2 class="text-2xl font-bold mb-4">Laboratory Dashboard</h2>
++    <h3 class="font-semibold">Pending Tests</h3>
++    <ul class="divide-y">
++        {% for order in pending_tests %}
++            <li class="py-2">
++                {{ order.patient.first_name }} {{ order.patient.last_name }} — {{ order.test.name }}
++                (Ordered {{ order.ordered_at|date:"M d, Y H:i" }})
++            </li>
++        {% empty %}
++            <li class="py-2 text-gray-500">No pending tests.</li>
++        {% endfor %}
++    </ul>
+ {% endblock %}
+
+public\templates\dashboard_lab.html
+───────────────────────────────────────────────────────────────────────────────
+
+public\templates\dashboard_nurse.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,12 +1,12 @@
+
+ {% extends "dashboard_base.html" %}
+ {% block content %}
+-<h2 class="text-2xl font-bold mb-4">Nurse Dashboard</h2>
+-<h3 class="font-semibold">Assigned Patients</h3>
+-<ul class="divide-y">
+-{% for p in assigned_patients %}
+-  <li class="py-2">{{ p.first_name }} {{ p.last_name }} — DOB: {{ p.dob|date:"M d, Y" }}</li>
+-{% empty %}
+-  <li class="py-2 text-gray-500">No patients assigned.</li>
+-{% endfor %}
+-</ul>
++    <h2 class="text-2xl font-bold mb-4">Nurse Dashboard</h2>
++    <h3 class="font-semibold">Assigned Patients</h3>
++    <ul class="divide-y">
++        {% for p in assigned_patients %}
++            <li class="py-2">{{ p.first_name }} {{ p.last_name }} — DOB: {{ p.dob|date:"M d, Y" }}</li>
++        {% empty %}
++            <li class="py-2 text-gray-500">No patients assigned.</li>
++        {% endfor %}
++    </ul>
+ {% endblock %}
+
+public\templates\dashboard_nurse.html
+───────────────────────────────────────────────────────────────────────────────
+
+public\templates\dashboard_pharmacy.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,20 +1,20 @@
+
+ {% extends "dashboard_base.html" %}
+ {% block content %}
+-<h2 class="text-2xl font-bold mb-4">Pharmacy Dashboard</h2>
+-
+-<h3 class="font-semibold">Pending Prescriptions</h3>
+-<ul class="divide-y">
+-{% for rx in pending_prescriptions %}
+-  <li class="py-2">
+-    {{ rx.patient.first_name }} {{ rx.patient.last_name }}
+-    — {% for item in rx.items.all %}
+-        {{ item.medication }} ({{ item.dosage }})
+-        {% if not forloop.last %}, {% endif %}
+-      {% endfor %}
+-    – Prescribed by {{ rx.prescribed_by.first_name }} {{ rx.prescribed_by.last_name }}
+-  </li>
+-{% empty %}
+-  <li class="py-2 text-gray-500">No pending prescriptions.</li>
+-{% endfor %}
+-</ul>
++    <h2 class="text-2xl font-bold mb-4">Pharmacy Dashboard</h2>
++    <h3 class="font-semibold">Pending Prescriptions</h3>
++    <ul class="divide-y">
++        {% for rx in pending_prescriptions %}
++            <li class="py-2">
++                {{ rx.patient.first_name }} {{ rx.patient.last_name }}
++                —
++                {% for item in rx.items.all %}
++                    {{ item.medication }} ({{ item.dosage }})
++                    {% if not forloop.last %},{% endif %}
++                {% endfor %}
++                – Prescribed by {{ rx.prescribed_by.first_name }} {{ rx.prescribed_by.last_name }}
++            </li>
++        {% empty %}
++            <li class="py-2 text-gray-500">No pending prescriptions.</li>
++        {% endfor %}
++    </ul>
+ {% endblock %}
+
+public\templates\dashboard_pharmacy.html
+───────────────────────────────────────────────────────────────────────────────
+
+public\templates\dashboard_placeholder.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,16 +1,17 @@
+
+-
+ <!DOCTYPE html>
+ <html lang="en">
+-<head>
+-  <meta charset="UTF-8" />
+-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-  <title>{{ role|capfirst }} Dashboard</title>
+-  <script src="https://cdn.tailwindcss.com"></script>
+-</head>
+-<body class="bg-gray-50 min-h-screen flex items-center justify-center">
+-  <div class="bg-white p-8 rounded-xl shadow text-center">
+-    <h1 class="text-3xl font-bold mb-4">{{ role|capfirst }} Dashboard</h1>
+-    <p class="text-gray-600">You are logged in as <strong>{{ role|capfirst }}</strong>.</p>
+-  </div>
+-</body>
++    <head>
++        <meta charset="UTF-8" />
++        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++        <title>{{ role|capfirst }} Dashboard</title>
++        <script src="https://cdn.tailwindcss.com"></script>
++    </head>
++    <body class="bg-gray-50 min-h-screen flex items-center justify-center">
++        <div class="bg-white p-8 rounded-xl shadow text-center">
++            <h1 class="text-3xl font-bold mb-4">{{ role|capfirst }} Dashboard</h1>
++            <p class="text-gray-600">
++                You are logged in as <strong>{{ role|capfirst }}</strong>.
++            </p>
++        </div>
++    </body>
+ </html>
+
+public\templates\dashboard_placeholder.html
+───────────────────────────────────────────────────────────────────────────────
+
+public\templates\landing.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,27 +1,27 @@
+
+ {% load static %}
+ <!DOCTYPE html>
+ <html lang="en">
+-<head>
+-  <meta charset="UTF-8" />
+-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-  <title>City Hospital</title>
+-  <script src="https://cdn.tailwindcss.com"></script>
+-</head>
+-<body class="bg-gray-50 min-h-screen text-gray-800">
+-  <section class="max-w-6xl mx-auto py-16 px-4">
+-    <h1 class="text-4xl font-bold text-center mb-10">Welcome to City Hospital</h1>
+-    <p class="text-lg text-center mb-12 text-gray-600">Choose your role to log in</p>
+-    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+-      {% for role in roles %}
+-      <a href="{% url 'public:role_login' role.slug %}"
+-         class="bg-white rounded-xl shadow hover:shadow-lg transition p-6 flex flex-col items-center text-center">
+-        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
+-          <span class="text-xl font-bold">{{ role.name|first }}</span>
+-        </div>
+-        <span class="font-semibold">{{ role.name }}</span>
+-      </a>
+-      {% endfor %}
+-    </div>
+-  </section>
+-</body>
++    <head>
++        <meta charset="UTF-8" />
++        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++        <title>City Hospital</title>
++        <script src="https://cdn.tailwindcss.com"></script>
++    </head>
++    <body class="bg-gray-50 min-h-screen text-gray-800">
++        <section class="max-w-6xl mx-auto py-16 px-4">
++            <h1 class="text-4xl font-bold text-center mb-10">Welcome to City Hospital</h1>
++            <p class="text-lg text-center mb-12 text-gray-600">Choose your role to log in</p>
++            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
++                {% for role in roles %}
++                    <a href="{% url 'public:role_login' role.slug %}"
++                       class="bg-white rounded-xl shadow hover:shadow-lg transition p-6 flex flex-col items-center text-center">
++                        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
++                            <span class="text-xl font-bold">{{ role.name|first }}</span>
++                        </div>
++                        <span class="font-semibold">{{ role.name }}</span>
++                    </a>
++                {% endfor %}
++            </div>
++        </section>
++    </body>
+ </html>
+
+public\templates\landing.html
+───────────────────────────────────────────────────────────────────────────────
+
+public\templates\registration\login.html
+───────────────────────────────────────────────────────────────────────────────
+@@ -1,31 +1,36 @@
+
+ <!DOCTYPE html>
+ <html lang="en">
+-<head>
+-  <meta charset="UTF-8" />
+-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-  <title>{{ role|capfirst }} Login</title>
+-  <script src="https://cdn.tailwindcss.com"></script>
+-</head>
+-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+-  <div class="bg-white p-8 rounded-xl shadow w-full max-w-md">
+-    <h1 class="text-2xl font-bold mb-6">{{ role|capfirst }} Login</h1>
+-    {% if error %}
+-      <p class="bg-red-100 text-red-700 p-2 rounded mb-4">{{ error }}</p>
+-    {% endif %}
+-    <form method="post" class="space-y-4">
+-      {% csrf_token %}
+-      <div>
+-        <label class="block text-sm text-gray-700 mb-1">Email</label>
+-        <input type="email" name="username" class="w-full border rounded p-2" required />
+-      </div>
+-      <div>
+-        <label class="block text-sm text-gray-700 mb-1">Password</label>
+-        <input type="password" name="password" class="w-full border rounded p-2" required />
+-      </div>
+-      <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white rounded p-2">
+-        Continue as {{ role|capfirst }}
+-      </button>
+-    </form>
+-  </div>
+-</body>
++    <head>
++        <meta charset="UTF-8" />
++        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++        <title>{{ role|capfirst }} Login</title>
++        <script src="https://cdn.tailwindcss.com"></script>
++    </head>
++    <body class="bg-gray-100 min-h-screen flex items-center justify-center">
++        <div class="bg-white p-8 rounded-xl shadow w-full max-w-md">
++            <h1 class="text-2xl font-bold mb-6">{{ role|capfirst }} Login</h1>
++            {% if error %}<p class="bg-red-100 text-red-700 p-2 rounded mb-4">{{ error }}</p>{% endif %}
++            <form method="post" class="space-y-4">
++                {% csrf_token %}
++                <div>
++                    <label class="block text-sm text-gray-700 mb-1">Email</label>
++                    <input type="email"
++                           name="username"
++                           class="w-full border rounded p-2"
++                           required />
++                </div>
++                <div>
++                    <label class="block text-sm text-gray-700 mb-1">Password</label>
++                    <input type="password"
++                           name="password"
++                           class="w-full border rounded p-2"
++                           required />
++                </div>
++                <button type="submit"
++                        class="w-full bg-blue-500 hover:bg-blue-600 text-white rounded p-2">
++                    Continue as {{ role|capfirst }}
++                </button>
++            </form>
++        </div>
++    </body>
+ </html>
+
+public\templates\registration\login.html
+───────────────────────────────────────────────────────────────────────────────
+
+32 files would be updated.
+Linted 32 files, found 55 errors.
+

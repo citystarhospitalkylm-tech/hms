@@ -36,7 +36,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         NURSE        = "NURSE", "Nurse"
         RECEPTIONIST = "RECEPTIONIST", "Receptionist"
         PATIENT      = "PATIENT", "Patient"
-        LAB          = "LAB","lab"
+        LAB          = "LAB", "Lab"
 
     email      = models.EmailField(unique=True)
     first_name = models.CharField(max_length=150, blank=True)
@@ -55,6 +55,15 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD  = "email"
     REQUIRED_FIELDS = []
+
+    # 🔹 DEMO PATCH — lets "username" in login form work as email
+    @property
+    def username(self):
+        return self.email
+
+    def get_username(self):
+        return self.email
+    # 🔹 End patch
 
     class Meta:
         app_label = "security"

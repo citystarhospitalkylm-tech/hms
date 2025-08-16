@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django_filters",
 
     # Your apps
+    
     "apps.patients",
     "apps.appointments",
     "apps.pharmacy",
@@ -72,7 +73,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [BASE_DIR /"public" / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -80,6 +81,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'public.context_processors.role_nav',
             ],
         },
     },
@@ -164,10 +166,17 @@ LOGGING = {
         },
     },
     'loggers': {
+        # General Django logs
         'django': {
             'handlers': ['console', 'file'],
-            'level': 'DEBUG',
+            'level': 'INFO',        # was DEBUG
             'propagate': True,
+        },
+        # Database query logs
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'WARNING',     # only warn/errors shown
+            'propagate': False,
         },
     },
 }

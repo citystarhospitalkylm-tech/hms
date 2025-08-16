@@ -1,0 +1,48 @@
+{% load static custom_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ role }} Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+
+  <!-- Top Navbar -->
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold">{{ role }} Dashboard</h1>
+      <nav class="space-x-4">
+        <a href="{% url 'landing' %}" class="text-gray-700 hover:text-blue-600">Home</a>
+        <a href="{% url 'logout' %}" class="text-gray-700 hover:text-blue-600">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="flex">
+    <!-- Sidebar -->
+    <aside class="hidden md:block w-64 bg-gray-100 min-h-screen p-4">
+      <nav class="space-y-2">
+        {% for r in roles %}
+          <a href="{{ ROLE_REDIRECTS|get_item:r.slug }}"
+   class="block px-3 py-2 rounded {{ role|eq:r.slug|yesno:'bg-blue-500 text-white,bg-gray-200 text-gray-800' }}">
+         {{ r.name }}
+          </a>
+        {% endfor %}
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t mt-6 py-4 text-center text-sm text-gray-500">
+    © {{ now|date:"Y" }} Hospital Management System. All rights reserved.
+  </footer>
+
+</body>
+</html>

@@ -8,7 +8,12 @@ from .serializers import (
     SaleItemSerializer,
     StockSerializer,
 )
+from django.shortcuts import render
+from config.rbac import require_module
 
+@require_module("pharmacy")
+def pharmacy_dashboard(request):
+    return render(request, "pharmacy/dashboard.html")
 # 🔐 Role-based permission
 class IsPharmacistOrAdmin(BasePermission):
     """

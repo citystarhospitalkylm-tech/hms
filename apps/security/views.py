@@ -10,6 +10,12 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from .forms import RoleAuthenticationForm
+from django.shortcuts import render
+from config.rbac import require_module
+
+@require_module("security")
+def security_dashboard(request):
+    return render(request, "security/dashboard.html")
 ROLE_DASHBOARD = {
     'admin':    'admin:dashboard',
     'doctor':   'doctor:dashboard',

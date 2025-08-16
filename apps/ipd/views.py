@@ -6,7 +6,12 @@ from .serializers import (
     VitalSignSerializer
 )
 from .permissions import IsIPDStaffOrReadOnly
+from django.shortcuts import render
+from config.rbac import require_module
 
+@require_module("ipd")
+def ipd_dashboard(request):
+    return render(request, "ipd/dashboard.html")
 class WardViewSet(viewsets.ModelViewSet):
     queryset = Ward.objects.all()
     serializer_class = WardSerializer

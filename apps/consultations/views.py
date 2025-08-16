@@ -9,7 +9,17 @@ from .serializers import (
     ReferralSerializer
 )
 from .permissions import ConsultationPermission
+from django.shortcuts import render
+from config.rbac import require_module
+from django.shortcuts import render
+from config.rbac import require_module
 
+@require_module("doctor")
+def doctor_dashboard(request):
+    return render(request, "doctor/dashboard.html")
+@require_module("consultation")
+def consultation_dashboard(request):
+    return render(request, "consultation/dashboard.html")
 
 def health_check(request):
     """

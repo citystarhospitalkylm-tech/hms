@@ -7,7 +7,17 @@ from rest_framework.response import Response
 from .models import Invoice, InvoiceItem, Payment
 from .serializers import InvoiceSerializer, InvoiceItemSerializer, PaymentSerializer
 from .permissions import BillingPermission
+from django.shortcuts import render
+from config.rbac import require_module
 
+@require_module("billing")
+def billing_dashboard(request):
+    """
+    Billing dashboard view.
+    Only accessible if the logged-in user's role
+    allows 'billing' in ROLE_MODULES.
+    """
+    return render(request, "billing/dashboard.html")
 
 class InvoiceViewSet(viewsets.ModelViewSet):
     queryset           = Invoice.objects.select_related('patient').all()

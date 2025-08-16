@@ -7,7 +7,12 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Patient
 from .serializers import PatientSerializer
 from .permissions import PatientPermissions
+from django.shortcuts import render
+from config.rbac import require_module
 
+@require_module("patients")
+def patients_dashboard(request):
+    return render(request, "patients/dashboard.html")
 
 class PatientViewSet(viewsets.ModelViewSet):
     """

@@ -26,7 +26,7 @@ ALLOWED_HOSTS = [host.strip() for host in get_env("ALLOWED_HOSTS", "localhost").
 # APPLICATION DEFINITION
 INSTALLED_APPS = [
     "corsheaders",
-
+    'public',
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

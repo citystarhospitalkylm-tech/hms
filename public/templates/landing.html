@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Hospital</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800">
+  <section class="max-w-6xl mx-auto py-16 px-4">
+    <h1 class="text-4xl font-bold text-center mb-10">Welcome to City Hospital</h1>
+    <p class="text-lg text-center mb-12 text-gray-600">Choose your role to log in</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {% for role in roles %}
+      <a href="{% url 'public:role_login' role.slug %}"
+         class="bg-white rounded-xl shadow hover:shadow-lg transition p-6 flex flex-col items-center text-center">
+        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
+          <span class="text-xl font-bold">{{ role.name|first }}</span>
+        </div>
+        <span class="font-semibold">{{ role.name }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</body>
+</html>
